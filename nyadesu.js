@@ -11,6 +11,11 @@ class Nyadesu {
         console.log("");
 
         this.loadCore();
+        this.Plugins._loadIndexed();
+        this.Client.connect();
+
+        // temp
+        this.Events.on("client.ready", () => this.Logging.success("Client", "Ready / in."));
     }
 
     loadCore() {
@@ -28,7 +33,7 @@ class Nyadesu {
             this._loadedCores.push(p);
         }
 
-        this.Logging.log("Nyadesu", `Loaded ${this._loadedCores.length} core(s). [${this._loadedCores.join(", ")}]`);
+        this.Logging.success("Nyadesu", `Loaded ${this._loadedCores.length} core(s). [${this._loadedCores.join(", ")}]`);
     }
 }
 

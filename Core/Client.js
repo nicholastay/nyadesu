@@ -12,6 +12,9 @@ class Client extends Eris {
     constructor() {
         let token = Nyadesu.Config.Client.token;
         super(token);
+        
+        this.on("ready", () => Nyadesu.Events.emit("client.ready"));
+        this.on("messageCreate", m => Nyadesu.Events.emit("client.message", m));
     }
 }
 

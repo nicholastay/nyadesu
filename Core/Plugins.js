@@ -37,11 +37,27 @@ class Plugins {
             this._plugins.push(plugin);
         }
 
-        Nyadesu.Logging.log("Plugins", `Indexed ${this._plugins.length} plugin(s). [${this._plugins.join(', ')}]`);
+        Nyadesu.Logging.success("Plugins", `Indexed ${this._plugins.length} plugin(s). [${this._plugins.join(', ')}]`);
     }
 
     _loadIndexed() {
+        for (let p of this._plugins) {
+            let h = require(path.join(this._pluginDir, p));
+            this[p].handler = new h();
+        }
 
+        this._attachEvents();
+        Nyadesu.Logging.success("Plugins", `Loaded the indexed plugin(s) and attached handler.`);
+    }
+
+    _attachEvents() {
+        Nyadesu.Events.on("client.message", message => {
+            for (let p of this._plugins) {
+                for (let h in this[p].handler.rawHandlers) {
+                    this[p].handler.rawHandlers[h](message);
+                }
+            }
+        });
     }
 }
 
