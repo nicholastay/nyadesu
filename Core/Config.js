@@ -8,7 +8,8 @@ const fs = require("fs")
 const confTemplate = {
     nice: "nice"
 };
-let coreDefaults = {};
+let coreDefaults = {}
+  , pluginDefaults = {};
 
 class Config {
     constructor() {
@@ -28,6 +29,7 @@ class Config {
         }
 
         this._loadCoreDefaults();
+        this._loadPluginDefaults();
         this._checkMissingKeys();
 
         this._keys = [];
@@ -53,6 +55,13 @@ class Config {
         }
     }
 
+    _loadPluginDefaults() {
+        for (let p of Nyadesu.Plugins._plugins) {
+            if (Nyadesu.Plugins[p].configDefaults)
+                pluginDefaults[p] = Nyadesu.Plugins[p].configDefaults;
+        }
+    }
+
     _checkMissingKeys() {
         let newKeys = false;
         for (let k in confTemplate) {
@@ -73,6 +82,25 @@ class Config {
                 // check new keys in each plugin key
                 if (!this._config[cP][cK]) {
                     this._config[cP][cK] = coreDefaults[cP][cK];
+                    newKeys = true;
+                }
+            }
+        }
+
+        // pretty much same as above, this time for plugins
+        if (!this._config.Plugin)
+            this._config.Plugin = {};
+        for (let pP in pluginDefaults) {
+            // check base plugin key
+            if (!this._config.Plugin[pP]) {
+                this._config.Plugin[pP] = {};
+                newKeys = true;
+            }
+
+            for (let pK in pluginDefaults[pP]) {
+                // check new keys in each plugin key
+                if (!this._config.Plugin[pP][pK]) {
+                    this._config.Plugin[pP][pK] = pluginDefaults[pP][pK];
                     newKeys = true;
                 }
             }

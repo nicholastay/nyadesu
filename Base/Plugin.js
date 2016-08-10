@@ -5,6 +5,10 @@ class Plugin {
         this.rawHandlers = {};
     }
 
+    get config() {
+        return (Nyadesu.Config.Plugin[this.constructor.name]) || {};
+    }
+
     addRawHandler(name, handler) {
         this.rawHandlers[name] = handler;
     }

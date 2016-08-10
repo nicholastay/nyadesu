@@ -10,6 +10,11 @@ class Core extends Plugin {
             if (m.content === "!kyaa")
                 Nyadesu.Client.createMessage(m.channel.id, "desunya!");
         });
+
+        this.addRawHandler("test_config", m => {
+            if (m.content === "!test")
+                Nyadesu.Client.createMessage(m.channel.id, this.config.test);
+        });
     }
 }
 
