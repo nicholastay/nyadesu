@@ -1,0 +1,17 @@
+{
+  "name": "nyadesu",
+  "version": "0.1.0",
+  "description": "nyadesu",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Nicholas Tay <nexerq@gmail.com> (http://nicholastay.github.io)",
+  "license": "Zlib",
+  "dependencies": {
+    "chalk": "^1.1.3",
+    "eris": "github:abalabahaha/eris",
+    "fast-strftime": "^1.1.1",
+    "ini": "^1.3.4"
+  }
+}
