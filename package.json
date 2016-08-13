@@ -9,6 +9,7 @@
   "author": "Nicholas Tay <nexerq@gmail.com> (http://nicholastay.github.io)",
   "license": "Zlib",
   "dependencies": {
+    "axios": "^0.13.1",
     "chalk": "^1.1.3",
     "eris": "github:abalabahaha/eris",
     "fast-strftime": "^1.1.1",

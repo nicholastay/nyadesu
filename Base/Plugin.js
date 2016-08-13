@@ -81,7 +81,7 @@ class Plugin {
 
     _throwErr(mod, channel, e) {
         Nyadesu.Logging.warn(`Plugin-${this.constructor.name}`, `<${mod}> ${e.stack || e}`);
-        Nyadesu.Client.createMessage(channel.id, `✗ <${this.constructor.name}.${mod}> \`Error: ${e}\``);
+        Nyadesu.Client.createMessage(channel.id, `❌ \`<${this.constructor.name}.${mod}> - ${e}\``);
     }
 }
 
