@@ -14,6 +14,9 @@ class Nyadesu {
         this.Plugins._loadIndexed();
         this.Client.connect();
 
+        this.Logging.success("Nyadesu", "Loaded core modules.");
+        this.Events.emit("nyadesu.loaded");
+
         // temp
         this.Events.on("client.ready", () => this.Logging.success("Client", "Ready / in."));
     }
@@ -22,7 +25,7 @@ class Nyadesu {
         this.corePath = path.join(__dirname, "Core");
         this._loadedCores = [];
 
-        const priorityLoads = ["Logging", "Plugins", "Config"]
+        const priorityLoads = ["Logging", "Plugins", "Config", "Events"]
             , corePlugins = fs.readdirSync(this.corePath).map(c => c.replace(".js", ""));
         for (let p of priorityLoads.concat(corePlugins)) {
             if (this._loadedCores.indexOf(p) >= 0)
