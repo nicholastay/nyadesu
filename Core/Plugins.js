@@ -51,12 +51,9 @@ class Plugins {
     }
 
     _attachEvents() {
-        Nyadesu.Events.on("client.message", message => {
-            for (let p of this._plugins) {
-                for (let h in this[p].handler.rawHandlers) {
-                    this[p].handler.rawHandlers[h](message);
-                }
-            }
+        Nyadesu.Events.on("client.message", m => {
+            for (let p of this._plugins)
+                this[p].handler.handle(m);
         });
     }
 }

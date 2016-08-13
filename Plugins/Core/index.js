@@ -1,20 +1,18 @@
 "use strict";
 
-const Plugin = require("../../Base/Plugin");
+const Plugin = require("../../Base/Plugin")
+    , PluginCommand = require("../../Base/PluginCommand");
 
 class Core extends Plugin {
     constructor() {
         super();
 
-        this.addRawHandler("raw_kyaa", m => {
-            if (m.content === "!kyaa")
-                Nyadesu.Client.createMessage(m.channel.id, "desunya!");
+        this.addRawHandler("about nyadesu", m => {
+            if (m.content === "!nyadesu")
+                Nyadesu.Client.createMessage(m.channel.id, "desunya! chatbot by Nexerq (nexerq@gmail.com) ~ 2016");
         });
 
-        this.addRawHandler("test_config", m => {
-            if (m.content === "!test")
-                Nyadesu.Client.createMessage(m.channel.id, this.config.test);
-        });
+        this.addCommand(new PluginCommand("meow", "fun meow command", () => "meow desu!"))
     }
 }
 
