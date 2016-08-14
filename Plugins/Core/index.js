@@ -14,7 +14,7 @@ class Core extends Plugin {
                 Nyadesu.Client.createMessage(m.channel.id, "desunya! chatbot by Nexerq (nexerq@gmail.com) ~ 2016");
         });
 
-        this.addCommand(new PluginCommand("meow", "fun meow command with promises", () => {
+        this.addCommand(new PluginCommand("meow", { description: "fun meow command with promises" }, () => {
             return axios.get("http://random.cat/meow")
                         .then(r => r.data.file);
         }));

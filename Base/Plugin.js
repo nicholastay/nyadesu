@@ -37,46 +37,55 @@ class Plugin {
                 this.rawHandlers[rH](message);
         }
 
-        if (Object.keys(this.commands).length > 0) {
-            let tail = message.content.split(" ")
-              , cmd = tail.shift();
+        if (Object.keys(this.commands).length > 0)
+            this.checkCommand(message);
+    }
 
-            for (let cH in this.commands) {
-                let command = this.commands[cH];
-                if (message.channel instanceof eris.PrivateChannel) {
-                    if (!command.allowPM)
-                        continue;
-                } else if (!command.allowServerChat) {
-                    continue;
-                }
+    checkCommand(message) {
+        let tail = message.content.split(" ")
+          , cmd = tail.shift();
 
-                let run = () => {
-                    let c;
-                    try {
-                        c = command.handler(tail, message.member || message.author, message.channel, message);
-                    }
-                    catch (e) {
-                        this._throwErr(command.trigger, message.channel, e);
-                    }
+        if (!cmd.startsWith(Nyadesu.Config.Client.prefix))
+            return;
 
-                    if (c instanceof Promise) {
-                        c.then(m => Nyadesu.Client.createMessage(message.channel.id, m))
-                            .catch(e => this._throwErr(command.trigger, message.channel, e));
-                    } else if (typeof c === "string") {
-                        Nyadesu.Client.createMessage(message.channel.id, c);
-                    } else {
-                        this._throwErr(command.trigger, message.channel, "Invalid return type, must be Promise/string.");
-                    }
-                };
+        let command = this.commands[cmd.replace(Nyadesu.Config.Client.prefix, "")];
+        if (!command)
+            return;
 
-                let trigger = Nyadesu.Config.Client.prefix + command.trigger;
-                if (command.caseSensitive && trigger === cmd) {
-                    run();
-                } else if (trigger === cmd.toLowerCase()) {
-                    run();
-                }
-            }
+        if (message.channel instanceof eris.PrivateChannel) {
+            if (!command.allowPM)
+                return;
+        } else if (!command.allowServerChat) {
+            return;
         }
+
+        // permission check
+        if (!Nyadesu.Permissions.hasPermission(message.member || message.author, (message.member && message.member.guild), command.permission))
+            return Nyadesu.Client.createMessage(message.channel.id, `❌ \`${message.author.username}#${message.author.discriminator}: You do not have permission to run this command.\``)
+
+        let _run = () => {
+            let c;
+            try {
+                c = command.handler(tail, message.member || message.author, message.channel, message);
+            }
+            catch (e) {
+                this._throwErr(command.trigger, message.channel, e);
+            }
+
+            if (c instanceof Promise) {
+                c.then(m => {
+                    Nyadesu.Client.createMessage(message.channel.id, m);
+                    if (command.autoCleanup)
+                        setTimeout(() => Nyadesu.Client.deleteMessage(message.channel.id, m.id), command.autoCleanup);
+                }).catch(e => this._throwErr(command.trigger, message.channel, e));
+            } else if (typeof c === "string") {
+                Nyadesu.Client.createMessage(message.channel.id, c);
+            } else if (c !== null) {
+                this._throwErr(command.trigger, message.channel, "Invalid return type, must be Promise/string/null.");
+            }
+        };
+        
+        Nyadesu.Client.sendChannelTyping(message.channel.id).then(_run.bind(this));
     }
 
     _throwErr(mod, channel, e) {
