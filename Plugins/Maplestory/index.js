@@ -5,7 +5,8 @@ const axios = require("axios")
 
 const Plugin = require("../../Base/Plugin")
     , PluginCommand = require("../../Base/PluginCommand")
-    , BucketInfo = require("../../Base/BucketInfo");
+    , BucketInfo = require("../../Base/BucketInfo")
+    , UserError = require("../../Base/UserError");
 
 class Maplestory extends Plugin {
     constructor() {
@@ -24,7 +25,7 @@ class Maplestory extends Plugin {
             .then(d => d.data)
             .then(html => {
                 if (html.indexOf(charName) < 0)
-                    return `❌ \`${author.username}#${author.discriminator}: Invalid character name...\``;
+                    throw new UserError("Invalid MapleStory character name...");
 
                 let $ = cheerio.load(html);
 
