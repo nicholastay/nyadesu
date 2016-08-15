@@ -42,4 +42,8 @@ function otherErisPatches() {
 
     // user#discrim getterl
     Object.defineProperty(Eris.User.prototype, "softMention", { get: function() { return `${this.username}#${this.discriminator}` } });
+
+    // prototypes for our reply/softReply
+    Eris.Message.prototype.reply = function(content, file) { return Nyadesu.Client.replyMessage(this.channel.id, content, file); }
+    Eris.Message.prototype.softReply = function(content, file) { return Nyadesu.Client.softReplyMessage(this.channel.id, content, file); }
 }

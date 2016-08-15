@@ -15,6 +15,9 @@ class PluginCommand {
         this.allowPM = undefOrDefault(options.allowPM, true);
         this.allowServerChat = undefOrDefault(options.allowServerChat, true);
 
+        this.reply = options.reply || false;
+        this.softReply = options.softReply || false;
+
         this.autoCleanup = options.autoCleanup || null; // set to ms value for cleanup
 
         this.permission = options.permission || Permission.NONE;

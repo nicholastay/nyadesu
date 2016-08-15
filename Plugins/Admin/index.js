@@ -29,18 +29,18 @@ class Admin extends Plugin {
             output = eval(tail.join(" "));
         }
         catch (e) {
-            return `\`\`\`\n${e.stack || e}\n\`\`\``
+            return `❌ \`${author.softMention}\`:\n\`\`\`\n${e.stack || e}\n\`\`\``
         }
 
         if (promised && output instanceof Promise) {
-            return output.then(o => `\`\`\`\n${o}\n\`\`\``)
-                    .catch(e => `\`\`\`\n${e.stack || e}\n\`\`\``);
+            return output.then(o => `✅ \`${author.softMention}\`:\n\`\`\`\n${o}\n\`\`\``)
+                    .catch(e => `❌ \`${author.softMention}\`:\n\`\`\`\n${e.stack || e}\n\`\`\``);
         }
 
         if (silent)
             return null;
 
-        return `\`\`\`\n${output}\n\`\`\``;
+        return `✅ \`${author.softMention}\`:\n\`\`\`\n${output}\n\`\`\``;
     }
 }
 

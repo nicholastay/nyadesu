@@ -16,7 +16,9 @@ class Core extends Plugin {
         
         this.addCommand(new PluginCommand("nyadesu", this.nyadesuCommand));
 
-        this.addCommand(new PluginCommand("meow", this.meowCommand));
+        this.addCommand(new PluginCommand("meow", {
+            reply: true
+        }, this.meowCommand));
 
         // this.addCommand(new PluginCommand("fail", "deliberate promise reject", () => Promise.reject("o_o")));
     }

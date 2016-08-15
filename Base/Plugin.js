@@ -76,8 +76,15 @@ class Plugin {
                 c.then(m => {
                     if (!m)
                         return;
+
+                    if (command.softReply)
+                        m = `\`${message.author.softMention}\`: ${m}`;
                     
-                    message.createMessage(m);
+                    if (command.reply)
+                        message.reply(m);
+                    else
+                        message.createMessage(m);
+
                     if (command.autoCleanup)
                         setTimeout(() => m.delete(), command.autoCleanup);
                 }).catch(e => this._throwErr(command.trigger, message.channel, e));
