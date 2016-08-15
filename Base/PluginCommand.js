@@ -4,20 +4,25 @@ const Permission = require("../Util/Permission");
 
 class PluginCommand {
     constructor(trigger, options, handler) {
+        if (!handler && typeof options === "function") {
+            handler = options;
+            options = {};
+        }
+
         this.trigger = trigger;
-        this.description = "";
         this.handler = handler;
         
-        this.allowPM = true;
-        this.allowServerChat = true;
+        this.allowPM = undefOrDefault(options.allowPM, true);
+        this.allowServerChat = undefOrDefault(options.allowServerChat, true);
 
-        this.autoCleanup = null; // set to ms value for cleanup
+        this.autoCleanup = options.autoCleanup || null; // set to ms value for cleanup
 
-        this.permission = Permission.NONE;
-
-        for (let k in options)
-            this[k] = options[k]; // merge in options
+        this.permission = options.permission || Permission.NONE;
     }
+}
+
+function undefOrDefault(property, defaultValue) {
+    return property === undefined ? defaultValue : property;
 }
 
 module.exports = PluginCommand;

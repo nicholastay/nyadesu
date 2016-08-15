@@ -9,7 +9,7 @@ class Logger extends Plugin {
     constructor() {
         super();
 
-        this.addRawHandler("consolelogger", this.logToConsole.bind(this));
+        this.addRawHandler("ConsoleLogger", this.logToConsole);
     }
 
     logToConsole(m) {

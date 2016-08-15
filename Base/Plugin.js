@@ -61,7 +61,7 @@ class Plugin {
 
         // permission check
         if (!Nyadesu.Permissions.hasPermission(message.member || message.author, (message.member && message.member.guild), command.permission))
-            return Nyadesu.Client.createMessage(message.channel.id, `❌ \`${message.author.username}#${message.author.discriminator}: You do not have permission to run this command.\``)
+            return message.createMessage(`❌ \`${message.author.username}#${message.author.discriminator}: You do not have permission to run this command.\``)
 
         let _run = () => {
             let c;
@@ -74,23 +74,23 @@ class Plugin {
 
             if (c instanceof Promise) {
                 c.then(m => {
-                    Nyadesu.Client.createMessage(message.channel.id, m);
+                    message.createMessage(m);
                     if (command.autoCleanup)
-                        setTimeout(() => Nyadesu.Client.deleteMessage(message.channel.id, m.id), command.autoCleanup);
+                        setTimeout(() => m.delete(), command.autoCleanup);
                 }).catch(e => this._throwErr(command.trigger, message.channel, e));
             } else if (typeof c === "string") {
-                Nyadesu.Client.createMessage(message.channel.id, c);
+                message.createMessage(c);
             } else if (c !== null) {
                 this._throwErr(command.trigger, message.channel, "Invalid return type, must be Promise/string/null.");
             }
         };
         
-        Nyadesu.Client.sendChannelTyping(message.channel.id).then(_run.bind(this));
+        message.channel.sendTyping().then(_run.bind(this));
     }
 
     _throwErr(mod, channel, e) {
         Nyadesu.Logging.warn(`Plugin-${this.constructor.name}`, `<${mod}> ${e.stack || e}`);
-        Nyadesu.Client.createMessage(channel.id, `❌ \`<${this.constructor.name}.${mod}> - ${e}\``);
+        channel.createMessage(`❌ \`<${this.constructor.name}.${mod}> - ${e}\``);
     }
 }
 
