@@ -66,7 +66,7 @@ class Config {
         let newKeys = false;
         for (let k in confTemplate) {
             if (!this._config[k]) {
-                this.config[k] = confTemplate[k];
+                this._config[k] = confTemplate[k];
                 newKeys = true;
             }
         }

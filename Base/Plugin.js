@@ -74,6 +74,9 @@ class Plugin {
 
             if (c instanceof Promise) {
                 c.then(m => {
+                    if (!m)
+                        return;
+                    
                     message.createMessage(m);
                     if (command.autoCleanup)
                         setTimeout(() => m.delete(), command.autoCleanup);
