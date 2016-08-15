@@ -17,7 +17,9 @@ class PluginCommand {
 
         this.reply = options.reply || false;
         this.softReply = options.softReply || false;
+        this.onReturnSuccess = options.onReturnSuccess || false; // [tick] xx...
 
+        this.requireInput = Number(options.requireInput) || false;
         this.autoCleanup = options.autoCleanup || null; // set to ms value for cleanup
 
         this.permission = options.permission || Permission.NONE;

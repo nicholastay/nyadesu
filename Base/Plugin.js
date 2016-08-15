@@ -2,7 +2,8 @@
 
 const eris = require("eris");
 
-const PluginCommand = require("./PluginCommand");
+const PluginCommand = require("./PluginCommand")
+    , UserError = require("./UserError");
 
 class Plugin {
     constructor() {
@@ -59,6 +60,10 @@ class Plugin {
             return;
         }
 
+        if (command.requireInput)
+            if (tail.length < command.requireInput)
+                return message.createMessage(`❌ \`${message.author.softMention}: This command requires at least ${command.requireInput} input(s) to work...\``);
+
         // permission check
         if (!Nyadesu.Permissions.hasPermission(message.member || message.author, (message.member && message.member.guild), command.permission))
             return message.createMessage(`❌ \`${message.author.softMention}: You do not have permission to run this command.\``);
@@ -69,13 +74,16 @@ class Plugin {
                 c = command.handler(tail, message.member || message.author, message.channel, message);
             }
             catch (e) {
-                this._throwErr(command.trigger, message.channel, e);
+                return this._throwErr(command.trigger, message.channel, e);
             }
 
             if (c instanceof Promise) {
                 c.then(m => {
                     if (!m)
                         return;
+
+                    if (command.onReturnSuccess)
+                        m = `✅ ${m}`;
 
                     if (command.softReply)
                         m = `\`${message.author.softMention}\`: ${m}`;
@@ -100,7 +108,9 @@ class Plugin {
 
     _throwErr(mod, channel, e) {
         Nyadesu.Logging.warn(`Plugin-${this.constructor.name}`, `<${mod}> ${e.stack || e}`);
-        channel.createMessage(`❌ \`<${this.constructor.name}.${mod}> - ${e}\``);
+
+        if (!e instanceof UserError)
+            channel.createMessage(`❌ \`<${this.constructor.name}.${mod}> - ${e}\``);
     }
 }
 

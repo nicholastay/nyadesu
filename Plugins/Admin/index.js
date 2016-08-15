@@ -9,7 +9,8 @@ class Admin extends Plugin {
         super();
 
         this.addCommand(new PluginCommand("eval", {
-            permission: Permission.BOT_ADMIN
+            permission: Permission.BOT_ADMIN,
+            onReturnSuccess: true
         }, this.evalCommand));
     }
 
@@ -33,14 +34,14 @@ class Admin extends Plugin {
         }
 
         if (promised && output instanceof Promise) {
-            return output.then(o => `✅ \`${author.softMention}\`:\n\`\`\`\n${o}\n\`\`\``)
+            return output.then(o => `\`${author.softMention}\`:\n\`\`\`\n${o}\n\`\`\``)
                     .catch(e => `❌ \`${author.softMention}\`:\n\`\`\`\n${e.stack || e}\n\`\`\``);
         }
 
         if (silent)
             return null;
 
-        return `✅ \`${author.softMention}\`:\n\`\`\`\n${output}\n\`\`\``;
+        return `\`${author.softMention}\`:\n\`\`\`\n${output}\n\`\`\``;
     }
 }
 

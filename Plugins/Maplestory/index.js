@@ -13,13 +13,12 @@ class Maplestory extends Plugin {
 
         this.profileBucket = new Bucket("Maplestory.fetchProfile", 1, "minute", { perUser: true });
 
-        this.addCommand(new PluginCommand("maple", this.fetchProfile.bind(this)));
+        this.addCommand(new PluginCommand("maple", {
+            requireInput: 1
+        }, this.fetchProfile.bind(this)));
     }
 
     fetchProfile(tail, author, channel) {
-        if (!tail[0])
-            return `❌ \`${author.username}#${author.discriminator}: You need to give a character name...\``;
-
         if (!Nyadesu.Ratelimiting.tryRemoveToken(this.profileBucket, author))
             return `❌ \`${author.username}#${author.discriminator}: Calm down bruv...\``;
 
