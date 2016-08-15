@@ -11,17 +11,13 @@ class Maplestory extends Plugin {
     constructor() {
         super();
 
-        this.profileBucket = new Bucket("Maplestory.fetchProfile", 1, "minute", { perUser: true });
-
         this.addCommand(new PluginCommand("maple", {
-            requireInput: 1
+            requireInput: 1,
+            rateLimitedBucket: new Bucket("Maplestory.fetchProfile", 1, "minute", { perUser: true })
         }, this.fetchProfile.bind(this)));
     }
 
     fetchProfile(tail, author, channel) {
-        if (!Nyadesu.Ratelimiting.tryRemoveToken(this.profileBucket, author))
-            return `❌ \`${author.username}#${author.discriminator}: Calm down bruv...\``;
-
         let charName = tail[0];
 
         return axios.get(`http://maplestory.nexon.net/rankings/overall-ranking/legendary?character_name=${charName}`)

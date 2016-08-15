@@ -68,6 +68,23 @@ class Plugin {
         if (!Nyadesu.Permissions.hasPermission(message.member || message.author, (message.member && message.member.guild), command.permission))
             return message.createMessage(`❌ \`${message.author.softMention}: You do not have permission to run this command.\``);
 
+        // rate limited
+        if (command.rateLimitedBucket) {
+            let result;
+            if (command.rateLimitedBucket.mode === "global")
+                result = Nyadesu.Ratelimiting.tryRemoveToken(command.rateLimitedBucket);
+            else if (command.rateLimitedBucket.mode === "perUser")
+                result = Nyadesu.Ratelimiting.tryRemoveToken(command.rateLimitedBucket, message.author);
+            else if (command.rateLimitedBucket.mode === "perServer" && message.channel.guild)
+                result = Nyadesu.Ratelimiting.tryRemoveToken(command.rateLimitedBucket, message.channel.guild);
+
+            if (!result) {
+                if (command.rateLimitedBucket.mode === "perUser")
+                    message.sendMessage(`❌ \`${message.author.softMention}: You need to *slooooooow* down bruv...\``);
+                return;
+            }
+        }
+
         let _run = () => {
             let c;
             try {
@@ -95,22 +112,22 @@ class Plugin {
 
                     if (command.autoCleanup)
                         setTimeout(() => m.delete(), command.autoCleanup);
-                }).catch(e => this._throwErr(command.trigger, message.channel, e));
+                }).catch(e => this._throwErr(command.trigger, message, e));
             } else if (typeof c === "string") {
                 message.createMessage(c);
             } else if (c !== null) {
-                this._throwErr(command.trigger, message.channel, "Invalid return type, must be Promise/string/null.");
+                this._throwErr(command.trigger, message, "Invalid return type, must be Promise/string/null.");
             }
         };
         
         message.channel.sendTyping().then(_run.bind(this));
     }
 
-    _throwErr(mod, channel, e) {
-        Nyadesu.Logging.warn(`Plugin-${this.constructor.name}`, `<${mod}> ${e.stack || e}`);
-
+    _throwErr(mod, message, e) {
         if (!e instanceof UserError)
-            channel.createMessage(`❌ \`<${this.constructor.name}.${mod}> - ${e}\``);
+            Nyadesu.Logging.warn(`Plugin-${this.constructor.name}`, `<${mod}> ${e.stack || e}`);
+
+        message.createMessage(`❌ \`${message.author.softMention}\`: \`<${this.constructor.name}.${mod}> - ${e}\``);
     }
 }
 
