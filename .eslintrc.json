@@ -1,0 +1,27 @@
+{
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module"
+    },
+    "env": {
+        "node": true,
+        "es6": true
+    },
+    "globals": {
+        "Nyadesu": true
+    },
+    "extends": "eslint:recommended",
+    "rules": {
+        "no-console": 0,
+        "dot-notation": 2,
+        "eqeqeq": 2,
+        "no-else-return": 1,
+        "yoda": 1,
+        "block-spacing": 2,
+        "indent": ["error", 4],
+        "keyword-spacing": 2,
+        "object-curly-spacing": ["warn", "always"],
+        "arrow-spacing": 2,
+        "semi": 2
+    }
+}

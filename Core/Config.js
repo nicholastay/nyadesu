@@ -24,7 +24,7 @@ class Config {
         }
         catch (e) {
             // file doesnt exist, create
-            Nyadesu.Logging.log("Config", "Config does not exist, generating.")
+            Nyadesu.Logging.log("Config", "Config does not exist, generating.");
             fs.writeFileSync(this._configFile, "", "utf8");
         }
 

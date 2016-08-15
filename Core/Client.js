@@ -9,7 +9,7 @@ class Client extends Eris {
         return {
             token: "DISCORD_TOKEN_HERE",
             prefix: "!"
-        }
+        };
     }
 
     constructor() {
@@ -41,9 +41,9 @@ function otherErisPatches() {
     // non generic patches
 
     // user#discrim getterl
-    Object.defineProperty(Eris.User.prototype, "softMention", { get: function() { return `${this.username}#${this.discriminator}` } });
+    Object.defineProperty(Eris.User.prototype, "softMention", { get: function() { return `${this.username}#${this.discriminator}`; } });
 
     // prototypes for our reply/softReply
-    Eris.Message.prototype.reply = function(content, file) { return Nyadesu.Client.replyMessage(this.channel.id, content, file); }
-    Eris.Message.prototype.softReply = function(content, file) { return Nyadesu.Client.softReplyMessage(this.channel.id, content, file); }
+    Eris.Message.prototype.reply = function(content, file) { return Nyadesu.Client.replyMessage(this.channel.id, content, file); };
+    Eris.Message.prototype.softReply = function(content, file) { return Nyadesu.Client.softReplyMessage(this.channel.id, content, file); };
 }

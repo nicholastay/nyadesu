@@ -9,7 +9,7 @@ class Repl {
 
     start() {
         Nyadesu.Logging.log("Repl", "Loading REPL, starting...");
-        let client = this.client = repl.start({
+        this.client = repl.start({
             prompt: (Nyadesu.Config.Repl && Nyadesu.Config.Repl.prompt) || "nyadesu » "
         });
         console.log("\n");

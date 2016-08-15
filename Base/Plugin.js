@@ -61,7 +61,7 @@ class Plugin {
 
         // permission check
         if (!Nyadesu.Permissions.hasPermission(message.member || message.author, (message.member && message.member.guild), command.permission))
-            return message.createMessage(`❌ \`${message.author.softMention}: You do not have permission to run this command.\``)
+            return message.createMessage(`❌ \`${message.author.softMention}: You do not have permission to run this command.\``);
 
         let _run = () => {
             let c;

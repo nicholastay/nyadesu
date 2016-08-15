@@ -13,7 +13,7 @@ class Admin extends Plugin {
         }, this.evalCommand));
     }
 
-    evalCommand(tail, author, channel) {
+    evalCommand(tail, author) {
         let silent = false
           , promised = false;
         if (tail[tail.length-1] === "-%s") { // silent
@@ -29,7 +29,7 @@ class Admin extends Plugin {
             output = eval(tail.join(" "));
         }
         catch (e) {
-            return `❌ \`${author.softMention}\`:\n\`\`\`\n${e.stack || e}\n\`\`\``
+            return `❌ \`${author.softMention}\`:\n\`\`\`\n${e.stack || e}\n\`\`\``;
         }
 
         if (promised && output instanceof Promise) {

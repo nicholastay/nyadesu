@@ -10,7 +10,7 @@ class Permissions {
             admins: ["62125999352975360"],
             mods: ["122274983794835457"],
             friends: ["122213573702189056"]
-        }
+        };
     }
 
     getUserPermission(user, server) {
@@ -31,15 +31,15 @@ class Permissions {
             return Permission.SERVER_OWNER;
 
         let serverAdminRole = server.roles.find(r => r.name === "nyadesu Admin");
-        if (r && user.roles.indexOf(serverAdminRole.id) > 0)
+        if (serverAdminRole && user.roles.indexOf(serverAdminRole.id) > 0)
             return Permission.SERVER_ADMIN;
 
         let serverModRole = server.roles.find(r => r.name === "nyadesu Mod");
-        if (r && user.roles.indexOf(serverAdminRole.id) > 0)
+        if (serverModRole && user.roles.indexOf(serverAdminRole.id) > 0)
             return Permission.SERVER_MOD;
 
         let serverRegularRole = server.roles.find(r => r.name === "nyadesu Regular");
-        if (r && user.roles.indexOf(serverAdminRole.id) > 0)
+        if (serverRegularRole && user.roles.indexOf(serverAdminRole.id) > 0)
             return Permission.SERVER_REGULAR;
 
 
