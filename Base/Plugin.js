@@ -69,17 +69,17 @@ class Plugin {
             return message.createMessage(`❌ \`${message.author.softMention}: You do not have permission to run this command.\``);
 
         // rate limited
-        if (command.rateLimitedBucket) {
+        if (command.rateLimitedInfo) {
             let result;
-            if (command.rateLimitedBucket.mode === "global")
-                result = Nyadesu.Ratelimiting.tryRemoveToken(command.rateLimitedBucket);
-            else if (command.rateLimitedBucket.mode === "perUser")
-                result = Nyadesu.Ratelimiting.tryRemoveToken(command.rateLimitedBucket, message.author);
-            else if (command.rateLimitedBucket.mode === "perServer" && message.channel.guild)
-                result = Nyadesu.Ratelimiting.tryRemoveToken(command.rateLimitedBucket, message.channel.guild);
+            if (command.rateLimitedInfo.mode === "global")
+                result = Nyadesu.Ratelimiting.tryRemoveToken(command.rateLimitedInfo);
+            else if (command.rateLimitedInfo.mode === "perUser")
+                result = Nyadesu.Ratelimiting.tryRemoveToken(command.rateLimitedInfo, message.author);
+            else if (command.rateLimitedInfo.mode === "perServer" && message.channel.guild)
+                result = Nyadesu.Ratelimiting.tryRemoveToken(command.rateLimitedInfo, message.channel.guild);
 
             if (!result) {
-                if (command.rateLimitedBucket.mode === "perUser")
+                if (command.rateLimitedInfo.mode === "perUser")
                     message.sendMessage(`❌ \`${message.author.softMention}: You need to *slooooooow* down bruv...\``);
                 return;
             }

@@ -20,7 +20,7 @@ class PluginCommand {
         this.onReturnSuccess = options.onReturnSuccess || false; // [tick] xx...
 
         this.requireInput = Number(options.requireInput) || false;
-        this.rateLimitedBucket = options.rateLimitedBucket || null;
+        this.rateLimitedInfo = options.rateLimitedInfo || null;
         this.autoCleanup = options.autoCleanup || null; // set to ms value for cleanup
 
         this.permission = options.permission || Permission.NONE;

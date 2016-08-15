@@ -5,7 +5,7 @@ const axios = require("axios")
 
 const Plugin = require("../../Base/Plugin")
     , PluginCommand = require("../../Base/PluginCommand")
-    , Bucket = require("../../Base/Bucket");
+    , BucketInfo = require("../../Base/BucketInfo");
 
 class Maplestory extends Plugin {
     constructor() {
@@ -13,7 +13,7 @@ class Maplestory extends Plugin {
 
         this.addCommand(new PluginCommand("maple", {
             requireInput: 1,
-            rateLimitedBucket: new Bucket("Maplestory.fetchProfile", 1, "minute", { perUser: true })
+            rateLimitedInfo: new BucketInfo("Maplestory.fetchProfile", 1, "minute", { perUser: true })
         }, this.fetchProfile.bind(this)));
     }
 

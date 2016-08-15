@@ -1,6 +1,6 @@
 "use strict";
 
-class Bucket {
+class BucketInfo {
     constructor(name, requests, limit, options) {
         this.name = name;
         this.requests = requests;
@@ -17,4 +17,4 @@ class Bucket {
     }
 }
 
-module.exports = Bucket;
+module.exports = BucketInfo;
