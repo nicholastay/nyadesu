@@ -22,9 +22,9 @@ class Voice extends Plugin {
             if (this.connections[channel.guild.id].textChannel.id === channel.id) {
                 return Nyadesu.Client.leaveVoiceChannel(this.connections[channel.guild.id].voiceChannel.id)
                     .then(() => "Successfully left the voice channel and unbound.");
-            } else {
-                throw new UserError(`There is already a voice connection in this server and the text channel is bound in ${this.connections[channel.guild.id].textChannel.mention}.`);
             }
+            
+            throw new UserError(`There is already a voice connection in this server and the text channel is bound in ${this.connections[channel.guild.id].textChannel.mention}.`);
         }
 
         let vc;
