@@ -13,11 +13,11 @@ class Logging {
     }
 
     warn(moduleName, content) {
-        this.log(moduleName, chalk.yellow("<! WARN> " + content));
+        this.log(moduleName, chalk.yellow("! <WARN> " + content));
     }
 
     fatal(moduleName, content) {
-        this.log(moduleName, chalk.red("<✗ FATAL> " + content));
+        this.log(moduleName, chalk.red("✗ <FATAL> " + content));
         process.exit(1);
     }
 }

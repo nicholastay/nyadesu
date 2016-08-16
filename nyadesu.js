@@ -19,6 +19,7 @@ class Nyadesu {
 
         // temp
         this.Events.on("client.ready", () => this.Logging.success("Client", "Ready / in."));
+        this.Events.on("client.disconnect", () => this.Logging.warn("Client", "Disconnected, will try auto-reconnect..."));
     }
 
     loadCore() {

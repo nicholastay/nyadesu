@@ -17,6 +17,7 @@ class Client extends Eris {
         super(token);
         
         this.on("ready", () => Nyadesu.Events.emit("client.ready"));
+        this.on("disconnect", () => Nyadesu.Events.emit("client.disconnect"));
         this.on("messageCreate", m => Nyadesu.Events.emit("client.message", m));
 
         // patch
