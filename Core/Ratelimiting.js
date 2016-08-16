@@ -21,7 +21,7 @@ class Ratelimiting {
             bucket = this.buckets[bucketObj.name];
         }
         else if (bucketObj.mode === "perUser" || bucketObj.mode === "perServer") {
-            if (!obj instanceof eris.User || !obj instanceof eris.Member || !obj instanceof eris.Guild)
+            if (!(obj instanceof eris.User) && !(obj instanceof eris.Member) && !(obj instanceof eris.Guild))
                 throw new Error("wrong obj, should be user or guild -- " + bucketObj.mode);
 
             if (!this.buckets[bucketObj.mode][obj.id])

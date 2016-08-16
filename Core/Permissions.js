@@ -23,7 +23,7 @@ class Permissions {
         if (config.friends.indexOf(user.id) >= 0)
             return Permission.BOT_FRIEND;
 
-        if (!server || !user instanceof eris.Member)
+        if (!server || !(user instanceof eris.Member))
             return Permission.NONE; // give up here if no server or isnt member
 
 

@@ -21,7 +21,7 @@ class Plugin {
     }
 
     addCommand(command) {
-        if (!command instanceof PluginCommand)
+        if (!(command instanceof PluginCommand))
             throw new TypeError();
         
         this.commands[command.trigger] = command;
@@ -102,11 +102,10 @@ class Plugin {
                     if (command.onReturnSuccess)
                         m = `✅ ${m}`;
 
-                    if (command.softReply)
-                        m = `\`${message.author.softMention}\`: ${m}`;
-                    
                     if (command.reply)
                         message.reply(m);
+                    else if (command.softReply)
+                        message.softReply(m);
                     else
                         message.createMessage(m);
 
@@ -124,7 +123,7 @@ class Plugin {
     }
 
     _throwErr(mod, message, e) {
-        if (!e instanceof UserError)
+        if (!(e instanceof UserError))
             Nyadesu.Logging.warn(`Plugin-${this.constructor.name}`, `<${mod}> ${e.stack || e}`);
 
         message.createMessage(`❌ \`${message.author.softMention}\`: \`<${this.constructor.name}.${mod}> - ${e}\``);

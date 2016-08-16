@@ -22,15 +22,14 @@ class Client extends Eris {
         // patch
         ErisMonkeypatch.patch(this);
         otherErisPatches();
+
+        // reply thingies
+        this.replyMessage = (message, content, file) =>
+            this.createMessage(message.channel.id, (message.channel instanceof Eris.PrivateChannel) ? content : `${message.author.mention}: ${content}`, file);
+        this.softReplyMessage = (message, content, file) =>
+            this.createMessage(message.channel.id, (message.channel instanceof Eris.PrivateChannel) ? content : `\`${message.author.softMention}\`: ${content}`, file);
+
         Nyadesu.Logging.success("Client", "Loaded Eris client + slight OOP patched.");
-    }
-
-    replyMessage(message, content, file) {
-        this.createMessage(message.channel.id, `${message.author.mention} ${content}`, file);
-    }
-
-    softReplyMessage(message, content, file) {
-        this.createMessage(message.channel.id, `\`${message.author.softMention}\`: ${content}`, file);
     }
 }
 
@@ -44,6 +43,6 @@ function otherErisPatches() {
     Object.defineProperty(Eris.User.prototype, "softMention", { get: function() { return `${this.username}#${this.discriminator}`; } });
 
     // prototypes for our reply/softReply
-    Eris.Message.prototype.reply = function(content, file) { return Nyadesu.Client.replyMessage(this.channel.id, content, file); };
-    Eris.Message.prototype.softReply = function(content, file) { return Nyadesu.Client.softReplyMessage(this.channel.id, content, file); };
+    Eris.Message.prototype.reply = function(content, file) { return Nyadesu.Client.replyMessage(this, content, file); };
+    Eris.Message.prototype.softReply = function(content, file) { return Nyadesu.Client.softReplyMessage(this, content, file); };
 }
