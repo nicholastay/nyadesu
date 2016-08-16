@@ -1,8 +1,12 @@
 "use strict";
 
+const fs = require("fs");
+
 const Plugin = require("../../Base/Plugin")
     , PluginCommand = require("../../Base/PluginCommand")
     , Permission = require("../../Util/Permission");
+
+const BASIC_URL_REGEX = /^https?:\/\//i;
 
 class Admin extends Plugin {
     constructor() {
@@ -10,8 +14,16 @@ class Admin extends Plugin {
 
         this.addCommand(new PluginCommand("eval", {
             permission: Permission.BOT_ADMIN,
-            onReturnSuccess: true
+            onReturnSuccess: true,
+            requireInput: 1
         }, this.evalCommand));
+
+        this.addCommand(new PluginCommand("setavatar", {
+            permission: Permission.BOT_ADMIN,
+            onReturnSuccess: true,
+            requireInput: 1,
+            softReply: true
+        }, this.setAvatarCommand));
     }
 
     evalCommand(tail, author) {
@@ -42,6 +54,23 @@ class Admin extends Plugin {
             return null;
 
         return `\`${author.softMention}\`:\n\`\`\`\n${output}\n\`\`\``;
+    }
+
+    setAvatarCommand(tail) {
+        let link = tail.join(" ")
+          , prom;
+
+        if (BASIC_URL_REGEX.test(link)) {
+            prom = axios.get(tail.join(link), { responseType: "arraybuffer" } )
+                .then(r => r.data);
+        } else {
+            prom = Promise.resolve(fs.readFileSync(link));
+        }
+
+        return prom
+            .then(d => "data:image/jpg;base64," + d.toString('base64'))
+            .then(a => Nyadesu.Client.editSelf({ avatar: a }))
+            .then(() => "New avatar successfully set.");
     }
 }
 
