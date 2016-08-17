@@ -1,13 +1,9 @@
 "use strict";
 
-const fs = require("fs");
-
 const Plugin = require("../../Base/Plugin")
     , PluginCommand = require("../../Base/PluginCommand")
     , Permission = require("../../Util/Permission")
     , UserError = require("../../Base/UserError");
-
-const BASIC_URL_REGEX = /^https?:\/\//i;
 
 class Admin extends Plugin {
     constructor() {

@@ -28,7 +28,7 @@ class Core extends Plugin {
             softReply: true,
             requireInput: 1,
             rateLimitedInfo: new BucketInfo("Core.testWebsite", 3, "minute", { perUser: true })
-        }, this.testWebsiteCommand))
+        }, this.testWebsiteCommand));
 
         // this.addCommand(new PluginCommand("fail", "deliberate promise reject", () => Promise.reject("o_o")));
     }

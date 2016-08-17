@@ -1,6 +1,7 @@
 "use strict";
 
-const fs = require("fs");
+const fs = require("fs")
+    , axios = require("axios");
 
 const Plugin = require("../../Base/Plugin")
     , PluginCommand = require("../../Base/PluginCommand")
