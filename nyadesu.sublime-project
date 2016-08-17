@@ -2,12 +2,21 @@
 	"folders":
 	[
 		{
-			"path": "."
+			"path": ".",
+			"folder_exclude_patterns": ["node_modules"]
 		}
 	],
 	"settings":
 	{
 		"tab_size": 4,
 		"translate_tabs_to_spaces": true
-	}
+	},
+	"build_systems":
+    [
+        {
+            "name": "Lint project (eslint)",
+            "cmd": ["./node_modules/.bin/eslint", "./"],
+            "working_dir": "${project_path}",
+        }
+    ]
 }
