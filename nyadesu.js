@@ -3,6 +3,8 @@
 const fs = require("fs")
     , path = require("path");
 
+global.Promise = require("bluebird");
+
 class Nyadesu {
     start() {
         console.log("-------------------");

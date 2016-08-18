@@ -10,6 +10,7 @@
   "license": "Zlib",
   "dependencies": {
     "axios": "^0.13.1",
+    "bluebird": "^3.4.1",
     "chalk": "^1.1.3",
     "cheerio": "^0.20.0",
     "eris": "github:abalabahaha/eris#21bd9c8d67f0a98b2bd2780f736bc5753c63e900",

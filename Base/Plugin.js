@@ -1,7 +1,6 @@
 "use strict";
 
-const eris = require("eris")
-    , BluePromise = require("bluebird");
+const eris = require("eris");
 
 const PluginCommand = require("./PluginCommand")
     , UserError = require("./UserError");
@@ -95,7 +94,7 @@ class Plugin {
                 return this._throwErr(command.trigger, message.channel, e);
             }
 
-            if (c instanceof Promise || c instanceof BluePromise) { // eris uses bluepromises
+            if (c instanceof Promise) {
                 c.then(m => {
                     if (!m)
                         return;
