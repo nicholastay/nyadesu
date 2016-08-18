@@ -52,8 +52,15 @@ class Plugins {
 
     _attachEvents() {
         Nyadesu.Events.on("client.message", m => {
-            for (let p of this._plugins)
-                this[p].handler.handle(m);
+            // global message splitter
+            let tail = m.content.split(" ")
+              , firstWord = tail.shift();
+
+            // handle plugins
+            for (let p of this._plugins) {
+                this[p].handler.handleRaw(m);
+                this[p].handler.handleSplit(firstWord, tail, m);
+            }
         });
     }
 }

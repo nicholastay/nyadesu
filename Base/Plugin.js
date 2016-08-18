@@ -32,20 +32,19 @@ class Plugin {
         Nyadesu.Events.on(event, handler.bind(this));
     }
 
-    handle(message) {
+    handleRaw(message) {
         if (Object.keys(this.rawHandlers).length > 0) {
             for (let rH in this.rawHandlers)
                 this.rawHandlers[rH](message);
         }
-
-        if (Object.keys(this.commands).length > 0)
-            this.checkCommand(message);
     }
 
-    checkCommand(message) {
-        let tail = message.content.split(" ")
-          , cmd = tail.shift();
+    handleSplit(cmd, tail, message) {
+        if (Object.keys(this.commands).length > 0)
+            this.checkCommand(cmd, tail, message);
+    }
 
+    checkCommand(cmd, tail, message) {
         if (!cmd.startsWith(Nyadesu.Config.Client.prefix))
             return;
 
