@@ -1,7 +1,7 @@
 "use strict";
 
 const fs = require("fs")
-    , axios = require("axios");
+    , fetch = require("node-fetch");
 
 const Plugin = require("../../Base/Plugin")
     , PluginCommand = require("../../Base/PluginCommand")
@@ -62,8 +62,8 @@ class Admin extends Plugin {
           , prom;
 
         if (BASIC_URL_REGEX.test(link)) {
-            prom = axios.get(tail.join(link), { responseType: "arraybuffer" } )
-                .then(r => r.data);
+            prom = fetch(link)
+                .then(r => r.buffer());
         } else {
             prom = Promise.resolve(fs.readFileSync(link));
         }

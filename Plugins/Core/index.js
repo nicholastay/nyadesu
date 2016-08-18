@@ -1,6 +1,6 @@
 "use strict";
 
-const axios = require("axios")
+const fetch = require("node-fetch")
     , htmlToText = require("html-to-text");
 
 const Plugin = require("../../Base/Plugin")
@@ -38,13 +38,15 @@ class Core extends Plugin {
     }
 
     meowCommand() {
-        return axios.get("http://random.cat/meow")
-                    .then(r => r.data.file);
+        return fetch("http://random.cat/meow")
+            .then(r => r.json())
+            .then(j => j.file);
     }
 
     testWebsiteCommand(tail) {
         let website = tail.join(" ");
-        return axios.get(`http://downforeveryoneorjustme.com/${website}`)
+        return fetch(`http://downforeveryoneorjustme.com/${website}`)
+            .then(r => r.text())
             .then(r => {
                 if (r.data.indexOf("doesn't look like a site") >= 0)
                     return `❌ Invalid website, please go away :<`;

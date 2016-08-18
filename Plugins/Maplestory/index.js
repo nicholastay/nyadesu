@@ -1,6 +1,6 @@
 "use strict";
 
-const axios = require("axios")
+const fetch = require("node-fetch")
     , cheerio = require("cheerio");
 
 const Plugin = require("../../Base/Plugin")
@@ -21,8 +21,8 @@ class Maplestory extends Plugin {
     fetchProfile(tail, author, channel) {
         let charName = tail[0];
 
-        return axios.get(`http://maplestory.nexon.net/rankings/overall-ranking/legendary?character_name=${charName}`)
-            .then(d => d.data)
+        return fetch(`http://maplestory.nexon.net/rankings/overall-ranking/legendary?character_name=${charName}`)
+            .then(r => r.text())
             .then(html => {
                 if (html.indexOf(charName) < 0)
                     throw new UserError("Invalid MapleStory character name...");
@@ -52,7 +52,8 @@ Job: ${job}
 Global Rank: ${rank} ${exp} [${moveUpDown}${move}]
 \`\`\``;
                 
-                return axios.get(img, { responseType: "arraybuffer" } )
+                return fetch(img)
+                    .then(r => r.buffer())
                     .then(imgData => {
                         channel.createMessage(output, {
                             file: imgData.data,
