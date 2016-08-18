@@ -19,7 +19,7 @@ class Logger extends Plugin {
 
         if (m.channel instanceof eris.PrivateChannel) {
             if (m.author.id === Nyadesu.Client.user.id)
-                return Nyadesu.Logging.log("Client-PM", chalk.magenta("nyadesu") + " -> " + chalk.yellow(`${m.author.softMention}`) + `: ${c}`);
+                return Nyadesu.Logging.log("Client-PM", chalk.magenta("nyadesu") + " -> " + chalk.yellow(`${m.channel.recipient.softMention}`) + `: ${c}`);
 
             return Nyadesu.Logging.log("Client-PM", chalk.yellow(`${m.author.softMention}`) + " -> " + chalk.magenta("nyadesu") + `: ${c}`);
         }
