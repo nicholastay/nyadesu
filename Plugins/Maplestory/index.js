@@ -62,7 +62,10 @@ Global Rank: ${rank} ${exp} [${moveUpDown}${move}]
 
                         return null;
                     })
-                    .catch(() => output + `\n\nCharacter Image: ${img}`);
+                    .catch(e => {
+                        Nyadesu.Logging.warn("Plugin-Maplestory", `Fetch image for character '${charName}' error: ${e.stack || e}`);
+                        return output + `\n\nCharacter Image: ${img}`;
+                    });
             });
     }
 }
