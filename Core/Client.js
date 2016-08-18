@@ -42,7 +42,7 @@ function otherErisPatches() {
 
     // user#discrim getterl
     Object.defineProperty(Eris.User.prototype, "softMention", { get: function() { return `${this.username}#${this.discriminator}`; } });
-    Object.defineProperty(Eris.Member.prototype, "softMention", { get: function() { return `${this.username}#${this.discriminator}`; } });
+    Object.defineProperty(Eris.Member.prototype, "softMention", { get: function() { return `${this.user.username}#${this.user.discriminator}`; } });
 
     // prototypes for our reply/softReply
     Eris.Message.prototype.reply = function(content, file) { return Nyadesu.Client.replyMessage(this, content, file); };
