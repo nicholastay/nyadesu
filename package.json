@@ -4,7 +4,8 @@
   "description": "nyadesu",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "db_migrate": "./node_modules/.bin/knex --cwd ./Database migrate:latest",
+    "db_rollback": "./node_modules/.bin/knex --cwd ./Database migrate:rollback"
   },
   "author": "Nicholas Tay <nexerq@gmail.com> (http://nicholastay.github.io)",
   "license": "Zlib",
@@ -16,8 +17,10 @@
     "fast-strftime": "^1.1.1",
     "html-to-text": "^2.1.3",
     "ini": "^1.3.4",
+    "knex": "^0.11.10",
     "limiter": "^1.1.0",
     "node-fetch": "^1.6.0",
+    "pg": "^6.1.0",
     "ytdl-core": "^0.7.17"
   },
   "devDependencies": {

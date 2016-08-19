@@ -55,6 +55,7 @@ class Plugins {
             // global message splitter
             let tail = m.content.split(" ")
               , firstWord = tail.shift();
+            Nyadesu.Events.emit("client.message.split", firstWord, tail, m);
 
             // handle plugins
             for (let p of this._plugins) {

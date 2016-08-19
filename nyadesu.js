@@ -28,7 +28,7 @@ class Nyadesu {
         this.corePath = path.join(__dirname, "Core");
         this._loadedCores = [];
 
-        const priorityLoads = ["Logging", "Plugins", "Config", "Events"]
+        const priorityLoads = ["Logging", "Plugins", "Config", "Database", "Events"]
             , corePlugins = fs.readdirSync(this.corePath).map(c => c.replace(".js", ""));
         for (let p of priorityLoads.concat(corePlugins)) {
             if (this._loadedCores.indexOf(p) >= 0)

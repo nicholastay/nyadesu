@@ -29,7 +29,7 @@ class Plugin {
 
     addEventHandler(name, event, handler) {
         this.events[name] = { event: event, handler: handler };
-        Nyadesu.Events.on(event, handler.bind(this));
+        Nyadesu.Events.on(event, handler);
     }
 
     handleRaw(message) {
@@ -90,7 +90,7 @@ class Plugin {
                 c = command.handler(tail, message.member || message.author, message.channel, message);
             }
             catch (e) {
-                return this._throwErr(command.trigger, message.channel, e);
+                return this._throwErr(command.trigger, message, e);
             }
 
             if (c instanceof Promise) {
