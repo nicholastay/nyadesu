@@ -31,10 +31,12 @@ class VoiceConnection {
             return this.textChannel.createMessage("We have reached the end of the voice queue, playback has stopped.");
 
         this.nowPlaying = this.queue.shift();
-        if (this.nowPlaying.isFile)
+        if (this.nowPlaying.isFile) {
             this.connection.playFile(this.nowPlaying.rawLink, { inlineVolume: true });
-        else
-            this.connection.playStream(this.nowPlaying.stream, { inlineVolume: true });
+        } else {
+            this.nowPlaying.getStream()
+                .then(strim => this.connection.playStream(strim, { inlineVolume: true }));
+        }
 
         this.textChannel.createMessage(`***Now Playing***: \`[${this.nowPlaying.provider.prototype.constructor.name}] ~ ${this.nowPlaying.title}\` -- requested by ${this.nowPlaying.requester.softMention}`);
     }

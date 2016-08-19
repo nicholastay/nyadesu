@@ -19,6 +19,10 @@ class Youtube extends Provider {
         return false;
     }
 
+    static get requiredPermission() {
+        return 0;
+    }
+
     static getInfo(item) {
         return new Promise((resolve, reject) => {
             ytdl.getInfo(item.rawLink, (err, info) => {
@@ -55,12 +59,14 @@ class Youtube extends Provider {
         if (!item._providerData)
             return new Error("no provider data z.z");
 
-        return ytdl.downloadFromInfo(item._providerData, { quality: 140 })
+        let stream = ytdl.downloadFromInfo(item._providerData, { quality: 140 })
             .on("error", e => {
                 if (e.code === "ECONNRESET")
                     item.nyaConnection.textChannel.createMessage("❌ Hit a connection error with YouTube... rip.");
                 Nyadesu.Logging.warn("Plugin-Voice", `<Youtube> - err: ${e.stack || e}`);
             });
+
+        return Promise.resolve(stream);
     }
 }
 

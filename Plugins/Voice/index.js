@@ -6,6 +6,7 @@ const fs = require("fs")
 const Plugin = require("../../Base/Plugin")
     , PluginCommand = require("../../Base/PluginCommand")
     , UserError = require("../../Base/UserError")
+    , Permission = require("../../Util/Permission")
     , VoiceConnection = require("./Struct/VoiceConnection")
     , QueueItem = require("./Struct/QueueItem");
 
@@ -34,13 +35,20 @@ class Voice extends Plugin {
             reply: true,
             requireInput: 1
         }, this.playCommand.bind(this)));
+
+        this.addCommand(new PluginCommand("fstop", {
+            allowPM: false,
+            softReply: true,
+            permission: Permission.SERVER_MOD,
+            onReturnSuccess: true
+        }, this.forceStopCommand.bind(this)));
     }
 
     voiceCommand(tail, author, channel) {
         if (this.connections[channel.guild.id]) {
             if (this.connections[channel.guild.id].textChannel.id === channel.id) {
-                delete(this.connections[channel.guild.id]);
                 Nyadesu.Client.leaveVoiceChannel(this.connections[channel.guild.id].voiceChannel.id);
+                delete(this.connections[channel.guild.id]);
                 return "Successfully left the voice channel and unbound.";
             }
             
@@ -85,15 +93,30 @@ class Voice extends Plugin {
         if (!lookup)
             throw new UserError("Invalid source of input to play from...");
 
+        if ((lookup.requiredPermission || Permission.NONE) !== Permission.NONE) {
+            if (!Nyadesu.Permissions.hasPermission(author, channel.guild, lookup.requiredPermission))
+                throw new UserError("You do not have permission to use this playback source...");
+        }
+
         return connection.addToQueue(new QueueItem(this, {
             requester: author,
             provider: provider,
-            rawLink: tailJoin
+            rawLink: lookup
         })).then(item => {
             if (!item.instaPlayed)
                 return item.addedMessage;
             return null;
         });
+    }
+
+    forceStopCommand(tail, author, channel) {
+        let connection = this._ensureConnection(channel);
+
+        if (!connection.nowPlaying)
+            throw new UserError("There is no track currently playing in this server...");
+
+        connection.connection.stopPlaying();
+        return "Stopped the current playing track.";
     }
 
     _ensureConnection(channel) {

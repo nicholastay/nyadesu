@@ -19,7 +19,7 @@ class QueueItem {
         return `Added ${this.provider.prototype.constructor.name} track \`${this.title}\` to the queue.`;
     }
 
-    get stream() {
+    getStream() {
         if (this.isFile)
             throw new TypeError();
 
