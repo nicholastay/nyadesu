@@ -30,6 +30,13 @@ class Voice extends Plugin {
             softReply: true
         }, this.voiceCommand.bind(this)));
 
+        this.addCommand(new PluginCommand("togglevoice", {
+            allowPM: false,
+            softReply: true,
+            permission: Permission.BOT_ADMIN,
+            onReturnSuccess: true
+        }, this.toggleVoiceCommand.bind(this)));
+
         this.addCommand(new PluginCommand("play", {
             allowPM: false,
             reply: true,
@@ -58,6 +65,9 @@ class Voice extends Plugin {
     }
 
     voiceCommand(tail, author, channel) {
+        if (!Nyadesu.SettingsManager.getSetting(channel.guild.id, "voice_allowed"))
+            throw new UserError(`This server is not allowed to use voice functionality, as it is very resource and bandwidth heavy. Please ask my owner for instructions if you insist.`);
+
         if (this.connections[channel.guild.id]) {
             if (this.connections[channel.guild.id].textChannel.id === channel.id) {
                 Nyadesu.Client.leaveVoiceChannel(this.connections[channel.guild.id].voiceChannel.id);
@@ -87,6 +97,13 @@ class Voice extends Plugin {
                 this.connections[channel.guild.id] = new VoiceConnection(conn, vc, channel);
                 return "Successfully joined the voice channel and bound to this text channel.";
             });
+    }
+
+    toggleVoiceCommand(tail, author, channel) {
+        let status = Nyadesu.SettingsManager.getSetting(channel.guild.id, "voice_allowed");
+
+        return Nyadesu.SettingsManager.editSetting(channel.guild.id, "voice_allowed", status ? false : true)
+            .then(() => `${status ? "Disallowed" : "Allowed"} voice functionality to be used on this server.`);
     }
 
     playCommand(tail, author, channel) {
