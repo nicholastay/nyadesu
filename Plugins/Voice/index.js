@@ -207,7 +207,7 @@ class Voice extends Plugin {
         if (connection.queue.length > 0) {
             let i = 1;
             for (let itm of connection.queue) {
-                r += `\n**${i < 10 ? ` ${i}` : i}:** ${itm.friendlyName}`; // < 10 pad
+                r += `\n**${i}:** ${itm.friendlyName}`; // < 10 pad
                 i++;
             }
         }
