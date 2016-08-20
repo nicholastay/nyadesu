@@ -47,6 +47,10 @@ class Voice extends Plugin {
             allowPM: false
         }, this.nowPlayingCommand.bind(this)));
 
+        this.addCommand(new PluginCommand("queue", {
+            allowPM: false
+        }, this.queueCommand.bind(this)));
+
         this.addCommand(new PluginCommand("volume", {
             allowPM: false,
             reply: true
@@ -149,7 +153,7 @@ class Voice extends Plugin {
         if (!connection.nowPlaying)
             throw new UserError("There is no track currently playing in this server...");
 
-        let r = connection.nowPlaying.friendlyName;
+        let r = "***Now Playing***: " + connection.nowPlaying.friendlyName;
         if (connection.nowPlaying.duration) {
             const duration = connection.nowPlaying.duration
                 , elapsed = connection.nowPlaying.secondsIn;
@@ -189,6 +193,26 @@ class Voice extends Plugin {
 
         connection.connection.setVolume(vol / 100);
         return `✅ The volume is now set to: ${connection.volume * 100}%.`;
+    }
+
+    queueCommand(tail, author, channel) {
+        let connection = this._ensureConnection(channel);
+
+        if (!connection.nowPlaying)
+            throw new UserError("There are no tracks currently queued in this server...");
+
+        let r = `**>> Queue for ${connection.voiceChannel.name} <<**`;
+        r += `\n**NP**: ` + connection.nowPlaying.friendlyName;
+
+        if (connection.queue.length > 0) {
+            let i = 1;
+            for (let itm of connection.queue) {
+                r += `\n**${i < 10 ? ` ${i}` : i}:** ${itm.friendlyName}`; // < 10 pad
+                i++;
+            }
+        }
+        
+        return r;
     }
 
     _ensureConnection(channel) {

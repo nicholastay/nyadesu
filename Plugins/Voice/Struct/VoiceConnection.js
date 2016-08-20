@@ -26,7 +26,7 @@ class VoiceConnection {
             .then(() => {
                 this.queue.push(item);
 
-                if (this.queue.length === 1) {
+                if (!this.nowPlaying) {
                     this.playNext();
                     item.instaPlayed = true;
                 }
@@ -36,8 +36,10 @@ class VoiceConnection {
     }
 
     playNext() {
-        if (this.queue.length < 1)
+        if (this.queue.length < 1) {
+            this.nowPlaying = null;
             return this.textChannel.createMessage("We have reached the end of the voice queue, playback has stopped.");
+        }
 
         this.nowPlaying = this.queue.shift();
         if (this.nowPlaying.isFile) {
@@ -47,7 +49,7 @@ class VoiceConnection {
                 .then(strim => this.connection.playStream(strim, { inlineVolume: true }));
         }
 
-        this.textChannel.createMessage(this.nowPlaying.friendlyName);
+        this.textChannel.createMessage("***Now Playing***: " + this.nowPlaying.friendlyName);
     }
 }
 

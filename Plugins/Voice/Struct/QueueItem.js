@@ -39,7 +39,7 @@ class QueueItem {
     }
 
     get friendlyName() {
-        return `***Now Playing***: \`[${this.provider.prototype.constructor.name}] ~ ${this.title}\` -- requested by \`${this.requester.softMention}\``;
+        return `\`[${this.provider.prototype.constructor.name}] ~ ${this.title}\` -- requested by \`${this.requester.softMention}\``;
     }
 
     get secondsIn() {
