@@ -42,6 +42,15 @@ class Voice extends Plugin {
             permission: Permission.SERVER_MOD,
             onReturnSuccess: true
         }, this.forceStopCommand.bind(this)));
+
+        this.addCommand(new PluginCommand("np", {
+            allowPM: false
+        }, this.nowPlayingCommand.bind(this)));
+
+        this.addCommand(new PluginCommand("volume", {
+            allowPM: false,
+            reply: true
+        }, this.volumeCommand.bind(this)));
     }
 
     voiceCommand(tail, author, channel) {
@@ -82,11 +91,26 @@ class Voice extends Plugin {
         let tailJoin = tail.join(" ");
 
         let lookup, provider;
+        const doLast = ["HttpLink"]; // do these last as these are to cover a broader scope, do more specific regexs first
         for (let p in this.providers) {
+            if (doLast.indexOf(p) >= 0)
+                continue;
+
             lookup = this.providers[p].regexLookup(tailJoin);
             if (lookup) {
                 provider = this.providers[p];
                 break;
+            }
+        }
+
+        // TODO: somehow not copypasta this pls
+        if (!lookup) {
+            for (let p of doLast) {
+                lookup = this.providers[p].regexLookup(tailJoin);
+                if (lookup) {
+                    provider = this.providers[p];
+                    break;
+                }
             }
         }
 
@@ -117,6 +141,54 @@ class Voice extends Plugin {
 
         connection.connection.stopPlaying();
         return "Stopped the current playing track.";
+    }
+
+    nowPlayingCommand(tail, author, channel) {
+        let connection = this._ensureConnection(channel);
+
+        if (!connection.nowPlaying)
+            throw new UserError("There is no track currently playing in this server...");
+
+        let r = connection.nowPlaying.friendlyName;
+        if (connection.nowPlaying.duration) {
+            const duration = connection.nowPlaying.duration
+                , elapsed = connection.nowPlaying.secondsIn;
+
+            // MAX duration
+            let minutes = Math.floor(duration / 60)
+              , _seconds = duration - (minutes * 60)
+              , seconds = _seconds.toString().length === 1 ? `0${_seconds}` : _seconds; // pad 0
+
+            // ELAPSED duration
+            let eMinutes = Math.floor(elapsed / 60)
+              , _eSeconds = elapsed - (eMinutes * 60)
+              , eSeconds = _eSeconds.toString().length === 1 ? `0${_eSeconds}` : _eSeconds; // pad 0;
+
+            let barsFilled = Math.round((elapsed / duration) * 15) - 1 // over 15 bars and -1 because circle in the middle
+              , barsBlank = 15 - barsFilled;
+
+            r += `
+>> **${"-".repeat(barsFilled)}o**${"-".repeat(barsBlank)} \`${eMinutes}:${eSeconds}/${minutes}:${seconds}\``;
+        }
+
+        return r;
+    }
+
+    volumeCommand(tail, author, channel) {
+        let connection = this._ensureConnection(channel);
+
+        if (!tail[0])
+            return `The volume is currently set at: ${connection.volume * 100}%.`;
+
+        if (!Nyadesu.Permissions.hasPermission(author, channel.guild, Permission.SERVER_MOD))
+            throw new UserError("You do not have permission to change the volume.");
+
+        let vol = Number(tail[0].replace("%", ""));
+        if (isNaN(vol) || vol < 0 || vol > 200)
+            throw new UserError("Invalid volume, should be a number as a percentage between 0-200%, with or without a % sign...");
+
+        connection.connection.setVolume(vol / 100);
+        return `✅ The volume is now set to: ${connection.volume * 100}%.`;
     }
 
     _ensureConnection(channel) {

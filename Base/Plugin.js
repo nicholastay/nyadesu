@@ -97,28 +97,31 @@ class Plugin {
                 c.then(m => {
                     if (!m)
                         return;
-
-                    if (command.onReturnSuccess)
-                        m = `✅ ${m}`;
-
-                    if (command.reply)
-                        message.reply(m);
-                    else if (command.softReply)
-                        message.softReply(m);
-                    else
-                        message.createMessage(m);
-
-                    if (command.autoCleanup)
-                        setTimeout(() => m.delete(), command.autoCleanup);
+                    this._sendCmdMsg(command, message, m);
                 }).catch(e => this._throwErr(command.trigger, message, e));
             } else if (typeof c === "string") {
-                message.createMessage(c);
+                this._sendCmdMsg(command, message, c);
             } else if (c !== null) {
                 this._throwErr(command.trigger, message, "Invalid return type, must be Promise/string/null.");
             }
         };
         
         message.channel.sendTyping().then(_run.bind(this));
+    }
+
+    _sendCmdMsg(command, message, content) {
+        if (command.onReturnSuccess)
+            content = `✅ ${content}`;
+
+        if (command.reply)
+            message.reply(content);
+        else if (command.softReply)
+            message.softReply(content);
+        else
+            message.createMessage(content);
+
+        if (command.autoCleanup)
+            setTimeout(() => content.delete(), command.autoCleanup);
     }
 
     _throwErr(mod, message, e) {

@@ -11,6 +11,7 @@ class QueueItem {
         this._providerData = null;
         this.title = null;
         this.duration = null;
+        this._dateElapse = null; // used to track how much time elapsed
 
         this.isFile = this.provider.isFilePlay;
     }
@@ -23,7 +24,11 @@ class QueueItem {
         if (this.isFile)
             throw new TypeError();
 
-        return this.provider.getStream(this);
+        return this.provider.getStream(this)
+            .then(s => {
+                this._dateElapse = Date.now(); // store this
+                return s;
+            });
     }
 
     getInfo() {
@@ -31,6 +36,14 @@ class QueueItem {
             .then(t => this.title = t)
             .then(() => this.provider.getDuration(this))
             .then(d => this.duration = d);
+    }
+
+    get friendlyName() {
+        return `***Now Playing***: \`[${this.provider.prototype.constructor.name}] ~ ${this.title}\` -- requested by \`${this.requester.softMention}\``;
+    }
+
+    get secondsIn() {
+        return Math.floor((Date.now() - this._dateElapse) / 1000);
     }
 }
 

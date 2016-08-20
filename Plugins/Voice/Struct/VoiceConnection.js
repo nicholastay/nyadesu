@@ -1,5 +1,7 @@
 "use strict";
 
+const ErisVoiceTransformer = require("eris/lib/util/VolumeTransformer");
+
 class VoiceConnection {
     constructor(connection, voiceChannel, textChannel) {
         this.connection = connection;
@@ -9,7 +11,14 @@ class VoiceConnection {
         this.queue = [];
         this.nowPlaying = null;
 
+        connection.volumeTransformer = new ErisVoiceTransformer(); // create this in advance so we can set the volume
+        connection.setVolume(0.15); // default it to 15% right away
+
         connection.on("end", this.playNext.bind(this));
+    }
+
+    get volume() {
+        return this.connection.volumeTransformer.volume;
     }
 
     addToQueue(item) {
@@ -38,7 +47,7 @@ class VoiceConnection {
                 .then(strim => this.connection.playStream(strim, { inlineVolume: true }));
         }
 
-        this.textChannel.createMessage(`***Now Playing***: \`[${this.nowPlaying.provider.prototype.constructor.name}] ~ ${this.nowPlaying.title}\` -- requested by ${this.nowPlaying.requester.softMention}`);
+        this.textChannel.createMessage(this.nowPlaying.friendlyName);
     }
 }
 
