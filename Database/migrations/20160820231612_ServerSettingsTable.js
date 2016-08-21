@@ -5,7 +5,8 @@ exports.up = function(knex, Promise) {
         table.string("server_id").unique();
         table.boolean("voice_allowed").defaultTo(false);
         table.specificType("ignored_channels", "text[]"); // https://github.com/tgriesser/knex/issues/569
-        table.timestamps();
+        table.timestamp('created_at').notNullable().defaultTo(knex.fn.now());
+        table.timestamp('updated_at').notNullable().defaultTo(knex.fn.now());
     });
 };
 

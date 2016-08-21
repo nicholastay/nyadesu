@@ -5,7 +5,9 @@ exports.up = function(knex, Promise) {
         table.string("trigger");
         table.string("output");
         table.string("server_id");
-        table.timestamps();
+        // table.timestamps(); - https://github.com/tgriesser/bookshelf/issues/587 postgres
+        table.timestamp('created_at').notNullable().defaultTo(knex.fn.now());
+        table.timestamp('updated_at').notNullable().defaultTo(knex.fn.now());
     });
 };
 
