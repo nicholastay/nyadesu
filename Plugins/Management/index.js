@@ -23,6 +23,14 @@ class Admin extends Plugin {
             requireInput: 1,
             reply: true
         }, this.cleanCommand));
+
+        this.addCommand(new PluginCommand("ignorechan", {
+            permission: Permission.SERVER_MOD,
+            onReturnSuccess: true,
+            reply: true,
+            allowPM: false,
+            allowIgnoredChannels: true
+        }, this.ignoreChanCommand));
     }
 
     pruneCommand(tail, author, channel) {
@@ -60,6 +68,32 @@ class Admin extends Plugin {
                     return `Successfully deleted ${msgCount} of my messages from the last 50 messages in this channel.`;
                 return null;
             });
+    }
+
+    ignoreChanCommand(tail, author, channel, message) {
+        let ignoredChans = Nyadesu.SettingsManager.getSetting(channel.guild.id, "ignored_channels");
+        if (ignoredChans.indexOf(channel.id) >= 0 && tail[0])
+            return; // we are supposed to be ignoring this channel!
+
+        let chan = channel.id;
+        if (tail[0]) {
+            if (!message.channelMentions[0])
+                throw new UserError("Invalid channel to toggle ignore, mention the channel or leave blank to default to this channel.");
+            chan = message.channelMentions[0];
+        }
+
+        let alreadyIgnoredPos = ignoredChans.indexOf(chan);
+
+        let prom;
+        if (alreadyIgnoredPos >= 0) { // already ignored, unignore
+            ignoredChans.splice(alreadyIgnoredPos, 1);
+            prom = Nyadesu.SettingsManager.editSetting(channel.guild.id, "ignored_channels", ignoredChans);
+        } else {
+            ignoredChans.push(chan);
+            prom = Nyadesu.SettingsManager.editSetting(channel.guild.id, "ignored_channels", ignoredChans);
+        }
+
+        return prom.then(() => `Successfully ${alreadyIgnoredPos >= 0 ? "un" : ""}ignored channel: ${channel.guild.channels.find(c => c.id === chan).mention}.`);
     }
 }
 

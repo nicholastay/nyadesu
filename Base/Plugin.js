@@ -59,6 +59,13 @@ class Plugin {
             return;
         }
 
+        // ignored channel check
+        if (!command.allowIgnoredChannels && !(message.channel instanceof eris.PrivateChannel)) {
+            let serverIgnored = Nyadesu.SettingsManager.getSetting(message.channel.guild.id, "ignored_channels");
+            if (serverIgnored && serverIgnored.indexOf(message.channel.id) >= 0)
+                return;
+        }
+
         if (command.requireInput)
             if (tail.length < command.requireInput)
                 return message.createMessage(`❌ \`${message.author.softMention}: This command requires at least ${command.requireInput} input(s) to work...\``);

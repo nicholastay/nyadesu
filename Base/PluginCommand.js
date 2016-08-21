@@ -14,6 +14,7 @@ class PluginCommand {
         
         this.allowPM = undefOrDefault(options.allowPM, true);
         this.allowServerChat = undefOrDefault(options.allowServerChat, true);
+        this.allowIgnoredChannels = options.allowIgnoredChannels || false;
 
         this.reply = options.reply || false;
         this.softReply = options.softReply || false;
