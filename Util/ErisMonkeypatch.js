@@ -6,11 +6,11 @@ let client = null;
 function monkeyPatch(firstClient) {
     client = firstClient;
 
-    Eris.Message.prototype.createMessage = function() { return getClient(this).createMessage.apply(client, [this.channel.id].concat(argsToArray(arguments))); };
+    Eris.Message.prototype.createMessage = function() { return getClient(this).createMessage.apply(getClient(this), [this.channel.id].concat(argsToArray(arguments))); };
     Eris.Message.prototype.delete = function() { return getClient(this).deleteMessage(this.channel.id, this.id); };
-    Eris.Channel.prototype.createMessage = function() { return getClient(this).createMessage.apply(client, [this.id].concat(argsToArray(arguments))); };
+    Eris.Channel.prototype.createMessage = function() { return getClient(this).createMessage.apply(getClient(this), [this.id].concat(argsToArray(arguments))); };
     Eris.Channel.prototype.sendTyping = function() { return getClient(this).sendChannelTyping(this.id); };
-    Eris.PrivateChannel.prototype.createMessage = function() { return getClient(this).createMessage.apply(client, [this.id].concat(argsToArray(arguments))); };
+    Eris.PrivateChannel.prototype.createMessage = function() { return getClient(this).createMessage.apply(getClient(this), [this.id].concat(argsToArray(arguments))); };
     Eris.PrivateChannel.prototype.sendTyping = function() { return getClient(this).sendChannelTyping(this.id); };
 }
 
