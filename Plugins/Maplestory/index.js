@@ -52,20 +52,31 @@ Job: ${job}
 Global Rank: ${rank} ${exp} [${moveUpDown}${move}]
 \`\`\``;
                 
-                return fetch(img)
-                    .then(r => r.buffer())
-                    .then(imgData => {
-                        channel.createMessage(output, {
-                            file: imgData.data,
-                            name: charName + ".png"
-                        });
+                let failedTwice = false;
+                let getAndSend = () => {
+                    return fetch(img)
+                        .then(r => r.buffer())
+                        .then(imgData => {
+                            channel.createMessage(output, {
+                                file: imgData,
+                                name: charName + ".png"
+                            });
 
-                        return null;
-                    })
-                    .catch(e => {
-                        Nyadesu.Logging.warn("Plugin-Maplestory", `Fetch image for character '${charName}' error: ${e.stack || e}`);
-                        return output + `\n\nCharacter Image: ${img}`;
-                    });
+                            return null;
+                        })
+                        .catch(e => {
+                            if (!failedTwice) {
+                                Nyadesu.Logging.warn("Plugin-Maplestory", `Failed image fetch once, '${charName}', retrying once again -- error: ${e}`);
+                                failedTwice = true;
+                                return getAndSend();
+                            }
+
+                            Nyadesu.Logging.warn("Plugin-Maplestory", `Fetch image for character '${charName}' error: ${e.stack || e}`);
+                            return output + `\n\nCharacter Image: ${img}`;
+                        });
+                };
+
+                return getAndSend();
             });
     }
 }

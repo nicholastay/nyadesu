@@ -86,7 +86,7 @@ class Plugin {
 
             if (!result) {
                 if (command.rateLimitedInfo.mode === "perUser")
-                    message.sendMessage(`❌ \`${message.author.softMention}: You need to *slooooooow* down bruv...\``);
+                    message.createMessage(`❌ \`${message.author.softMention}: You need to *slooooooow* down bruv...\``);
                 return;
             }
         }
