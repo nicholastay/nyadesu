@@ -2,16 +2,25 @@
 
 const Eris = require("eris");
 
-let client = null;
-function monkeyPatch(firstClient) {
-    client = firstClient;
+let firstClient = null;
+function monkeyPatch(fClient) {
+    firstClient = fClient;
 
-    Eris.Message.prototype.createMessage = function() { return getClient(this).createMessage.apply(getClient(this), [this.channel.id].concat(argsToArray(arguments))); };
-    Eris.Message.prototype.delete = function() { return getClient(this).deleteMessage(this.channel.id, this.id); };
-    Eris.Channel.prototype.createMessage = function() { return getClient(this).createMessage.apply(getClient(this), [this.id].concat(argsToArray(arguments))); };
-    Eris.Channel.prototype.sendTyping = function() { return getClient(this).sendChannelTyping(this.id); };
-    Eris.PrivateChannel.prototype.createMessage = function() { return getClient(this).createMessage.apply(getClient(this), [this.id].concat(argsToArray(arguments))); };
-    Eris.PrivateChannel.prototype.sendTyping = function() { return getClient(this).sendChannelTyping(this.id); };
+    Eris.Message.prototype.createMessage = function() { return clientFuncArgs(this, "createMessage", [this.channel.id], arguments); };
+    Eris.Message.prototype.delete = function() { return clientFuncArgs(this, "deleteMessage", [this.channel.id, this.id]); };
+    Eris.Channel.prototype.createMessage = function() { return clientFuncArgs(this, "createMessage", [this.id], arguments); };
+    Eris.Channel.prototype.sendTyping = function() { return clientFuncArgs(this, "sendChannelTyping", [this.id]); };
+    Eris.PrivateChannel.prototype.createMessage = function() { return clientFuncArgs(this, "createMessage", [this.id], arguments); };
+    Eris.PrivateChannel.prototype.sendTyping = function() { return clientFuncArgs(this, "sendChannelTyping", [this.id]); };
+}
+
+
+function clientFuncArgs(self, funcName, prependArgs, args) {
+    let client = getClient(self);
+    if (!args)
+        return client[funcName].apply(client, prependArgs);
+
+    return client[funcName].apply(client, prependArgs.concat(argsToArray(args)));
 }
 
 
@@ -21,7 +30,7 @@ function getClient(channel) {
         channel = channel.channel;
 
     if (channel instanceof Eris.PrivateChannel)
-        return client; // must be on the first shard client
+        return firstClient; // must be on the first shard client
 
     return channel.guild.shard.client;
 }
