@@ -7,6 +7,10 @@ global.Promise = require("bluebird");
 
 class Nyadesu {
     start() {
+        if (global.Nyadesu)
+            throw new Error("An instance of Nyadesu is already running in this process, please stop then reload.");
+        global.Nyadesu = this;
+
         console.log("-------------------");
         console.log("Nyadesu, v0.1");
         console.log("-------------------");
@@ -41,8 +45,10 @@ class Nyadesu {
 
         this.Logging.success("Nyadesu", `Loaded ${this._loadedCores.length} core(s). [${this._loadedCores.join(", ")}]`);
     }
+
+    stop() {
+        global.Nyadesu = undefined;
+    }
 }
 
-module.exports = Nyadesu;
-let NyadesuI = global.Nyadesu = new Nyadesu();
-NyadesuI.start();
+(new Nyadesu()).start();
