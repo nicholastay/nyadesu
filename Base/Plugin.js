@@ -120,22 +120,28 @@ class Plugin {
         if (command.onReturnSuccess)
             content = `✅ ${content}`;
 
+        let prom;
         if (command.reply)
-            message.reply(content);
+            prom = message.reply(content);
         else if (command.softReply)
-            message.softReply(content);
+            prom = message.softReply(content);
         else
-            message.createMessage(content);
+            prom = message.createMessage(content);
 
         if (command.autoCleanup)
-            setTimeout(() => content.delete(), command.autoCleanup);
+            prom.then(m => setTimeout(() => m.delete(), command.autoCleanup));
     }
 
     _throwErr(mod, message, e) {
-        if (!(e instanceof UserError))
+        let uError = e instanceof UserError;
+        if (!uError)
             Nyadesu.Logging.warn(`Plugin-${this.constructor.name}`, `<${mod}> ${e.stack || e}`);
 
-        message.createMessage(`❌ \`${message.author.softMention}\`: \`<${this.constructor.name}.${mod}> - ${e}\``);
+        return message.createMessage(`❌ \`${message.author.softMention}\`: \`<${this.constructor.name}.${mod}> - ${e}\``)
+            .then(m => {
+                if (uError)
+                    setTimeout(() => m.delete(), 10500);
+            });
     }
 }
 
