@@ -10,15 +10,31 @@ class VoiceConnection {
 
         this.queue = [];
         this.nowPlaying = null;
+        this.autoDisconnect = null; // disconnection timeout
 
         connection.volumeTransformer = new ErisVoiceTransformer(); // create this in advance so we can set the volume
         connection.setVolume(0.15); // default it to 15% right away
 
-        connection.on("end", this.playNext.bind(this));
+        connection.on("end", () => {
+            let res = this.playNext();
+            if (!res) {
+                // nothing to play, auto d/c
+                this.autoDisconnect = setTimeout(() => this.destroy(), 10 * 60 * 60 * 1000); // 10 mins
+            } else if (this.autoDisconnect) {
+                // clear timeout if there is one
+                clearTimeout(this.autoDisconnect);
+                this.autoDisconnect = null;
+            }
+        });
     }
 
     get volume() {
         return this.connection.volumeTransformer.volume;
+    }
+
+    destroy() {
+        Nyadesu.Client.leaveVoiceChannel(this.voiceChannel.id);
+        delete(Nyadesu.Plugins.Voice.handler.connections[this.textChannel.guild.id]);
     }
 
     addToQueue(item) {
@@ -38,7 +54,8 @@ class VoiceConnection {
     playNext() {
         if (this.queue.length < 1) {
             this.nowPlaying = null;
-            return this.textChannel.createMessage("We have reached the end of the voice queue, playback has stopped.");
+            this.textChannel.createMessage("We have reached the end of the voice queue, playback has stopped.");
+            return false;
         }
 
         this.nowPlaying = this.queue.shift();
@@ -50,7 +67,11 @@ class VoiceConnection {
         }
 
         this.textChannel.createMessage("***Now Playing***: " + this.nowPlaying.friendlyName);
+        return true;
     }
 }
 
 module.exports = VoiceConnection;
+
+
+// full on ghetto but makes it cleaner - i should devise a better way to do this
