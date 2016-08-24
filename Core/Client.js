@@ -2,7 +2,7 @@
 
 const Eris = require("eris");
 
-const ErisMonkeypatch = require("../Util/ErisMonkeypatch");
+const ErisMonkeypatch = require("../Util/eris-ooppatch/patch");
 
 class Client extends Eris {
     static get configDefaults() {

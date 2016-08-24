@@ -1,3 +1,3 @@
 # nyadesu
 
-glhf
+glhf `git clone --recursive https://github.com/nicholastay/nyadesu.git`
