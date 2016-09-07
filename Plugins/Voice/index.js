@@ -21,7 +21,12 @@ class Voice extends Plugin {
 
         for (let p of fs.readdirSync(PROVIDERS_PATH)) {
             let pName = p.replace(".js", "");
-            this.providers[pName] = require(path.join(PROVIDERS_PATH, p));
+            let prov = require(path.join(PROVIDERS_PATH, p));
+
+            if (prov.checkCompatibility && !prov.checkCompatibility())
+                continue;
+            
+            this.providers[pName] = prov;
         }
 
         this.addCommand(new PluginCommand("voice", {
@@ -143,7 +148,7 @@ class Voice extends Plugin {
                 throw new UserError("You do not have permission to use this playback source...");
         }
 
-        return connection.addToQueue(new QueueItem(this, {
+        return connection.addToQueue(new QueueItem(connection, {
             requester: author,
             provider: provider,
             rawLink: lookup
