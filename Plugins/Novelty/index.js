@@ -8,18 +8,8 @@ const Plugin = require("../../Base/Plugin")
     , UserError = require("../../Base/UserError");
 
 const NON_ALPHANUMERIC_SPACE_CHECK = /[^A-Za-z0-9 ]/;
-const NUMBER_LITERAL_MAP = {
-    "0": "zero",
-    "1": "one",
-    "2": "two",
-    "3": "three",
-    "4": "four",
-    "5": "five",
-    "6": "six",
-    "7": "seven",
-    "8": "eight",
-    "9": "nine"
-};
+const GENERIC_UNICODE_BLOCK_CHAR = String.fromCharCode(55356);
+const GENERIC_UNICODE_NUM_CHAR = String.fromCharCode(8419);
 
 class Novelty extends Plugin {
     constructor() {
@@ -54,11 +44,14 @@ class Novelty extends Plugin {
 
             // blockify stuff
             // numbers handling emoji
+            // original number + generic character
             if (!isNaN(w))
-                return `:${NUMBER_LITERAL_MAP[w]}:`;
+                return w + GENERIC_UNICODE_NUM_CHAR;
 
-            // send emoji letters
-            return `:regional_indicator_${w.toLowerCase()}:`;
+            let letterCode = w.toLowerCase().charCodeAt(0);
+            // send emoji letters -- unicode two character combo
+            // generic character + a special character with a 56709 difference
+            return GENERIC_UNICODE_BLOCK_CHAR + String.fromCharCode(letterCode + 56709);
         }).join(" "); // needs to be spaced out as unicode gets stuffed
     }
 }
