@@ -1,6 +1,7 @@
 "use strict";
 
-const Knex = require("knex");
+const Knex = require("knex")
+    , chalk = require("chalk");
 
 class Database extends Knex {
     static get configDefaults() {
@@ -20,6 +21,8 @@ class Database extends Knex {
 
     constructor() {
         super(Nyadesu.Config.Database);
+
+        this.on("query", q => Nyadesu.Logging.log("Database", chalk.cyan("<QUERY> " + q.sql)));
     }
 }
 
