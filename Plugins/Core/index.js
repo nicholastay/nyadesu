@@ -25,10 +25,6 @@ class Core extends Plugin {
         
         this.addCommand(new PluginCommand("nyadesu", this.nyadesuCommand));
 
-        this.addCommand(new PluginCommand("meow", {
-            reply: true
-        }, this.meowCommand));
-
         this.addCommand(new PluginCommand("testwebsite", {
             softReply: true,
             requireInput: 1,
@@ -60,12 +56,6 @@ class Core extends Plugin {
 
     nyadesuCommand() {
         return "desunya! chatbot by Nexerq (nexerq@gmail.com) ~ 2016";
-    }
-
-    meowCommand() {
-        return fetch("http://random.cat/meow")
-            .then(r => r.json())
-            .then(j => j.file);
     }
 
     testWebsiteCommand(tail) {
