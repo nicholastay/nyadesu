@@ -16,6 +16,10 @@ class Voice extends Plugin {
     constructor() {
         super();
 
+        if (Nyadesu.Client.voiceConnections.size > 0) // cleanup stales
+            Nyadesu.Client.voiceConnections.forEach((val, key) =>
+                Nyadesu.Client.leaveVoiceChannel(key));
+
         this.connections = {};
         this.providers = {};
 
