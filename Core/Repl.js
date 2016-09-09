@@ -12,7 +12,16 @@ class Repl {
         this.client = repl.start({
             prompt: (Nyadesu.Config.Repl && Nyadesu.Config.Repl.prompt) || "nyadesu » "
         });
+        this.attachCommands();
+
         console.log("\n");
+    }
+
+    attachCommands() {
+        this.client.defineCommand("r", {
+            help: '[Plugins] Reload a plugin',
+            action: h => Nyadesu.Plugins._reload(h)
+        });
     }
 }
 
