@@ -24,6 +24,10 @@ class Novelty extends Plugin {
             reply: true,
             requireInput: 1,
         }, this.blockifyCommand));
+
+        this.addCommand(new PluginCommand("square", {
+            requireInput: 1
+        }, this.squareCommand));
     }
 
     meowCommand() {
@@ -36,7 +40,7 @@ class Novelty extends Plugin {
         let data = tail.join(" ");
 
         if (NON_ALPHANUMERIC_SPACE_CHECK.test(data))
-            throw new UserError("Invalid input, you may only use letters, numbers and spaces.")
+            throw new UserError("Invalid input, you may only use letters, numbers and spaces.");
 
         return data.split("").map(w => {
             if (w === " ")
@@ -53,6 +57,19 @@ class Novelty extends Plugin {
             // generic character + a special character with a 56709 difference
             return GENERIC_UNICODE_BLOCK_CHAR + String.fromCharCode(letterCode + 56709);
         }).join(" "); // needs to be spaced out as unicode gets stuffed
+    }
+
+    squareCommand(tail) {
+        let data = tail.join(" ");
+        data = data.replace(/[ \n]/g, "").split(""); // replace spaces and new lines + to array
+
+        let output = "";
+        for (let i = 0; i < data.length; ++i) { // 'i' actually doesnt matter, just want to exec this many times
+            output += data.join(" ") + "\n"; // space it out and new line
+            data.push(data.shift()); // move the first letter to the end
+        }
+
+        return "```\n" + output + "\n```"; // code blockify
     }
 }
 
