@@ -47,14 +47,15 @@ class Plugins {
     }
 
     _load(pluginName, skipMetadata) {
-        if (this[pluginName])
-            return false;
-        
         if (!skipMetadata) 
             this._indexPlugin(pluginName);
 
+        if (this[pluginName].loaded)
+            return false;
+
         let h = require(path.join(this._pluginDir, pluginName));
         this[pluginName].handler = new h();
+        this[pluginName].loaded = true;
         return true;
     }
 
