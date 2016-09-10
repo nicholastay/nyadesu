@@ -47,6 +47,9 @@ class Plugins {
     }
 
     _load(pluginName, skipMetadata) {
+        if (this[pluginName])
+            return false;
+        
         if (!skipMetadata) 
             this._indexPlugin(pluginName);
 

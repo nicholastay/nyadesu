@@ -22,6 +22,14 @@ class Repl {
             help: '[Plugins] Reload a plugin',
             action: h => Nyadesu.Plugins._reload(h)
         });
+        this.client.defineCommand("l", {
+            help: '[Plugins] Loads a plugin',
+            action: h => Nyadesu.Plugins._load(h)
+        });
+        this.client.defineCommand("u", {
+            help: '[Plugins] Unloads a plugin',
+            action: h => Nyadesu.Plugins._unload(h)
+        });
     }
 }
 
