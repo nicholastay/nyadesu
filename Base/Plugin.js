@@ -32,6 +32,13 @@ class Plugin {
         Nyadesu.Events.on(event, handler);
     }
 
+    detachAllEvents() {
+        for (let k in this.events) {
+            Nyadesu.Events.removeEventListener(this.events[k].event, this.events[k].handler);
+            delete(this.events[k]);
+        }
+    }
+
     handleRaw(message) {
         if (Object.keys(this.rawHandlers).length > 0) {
             for (let rH in this.rawHandlers)

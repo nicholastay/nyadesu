@@ -68,6 +68,7 @@ class Plugins {
     _unload(pluginName, skipHotDestroy) {
         if (!this[pluginName])
             return false;
+        this[pluginName].handler.detachAllEvents();
         delete(this[pluginName]);
         this._plugins.splice(this._plugins.indexOf(pluginName), 1);
 

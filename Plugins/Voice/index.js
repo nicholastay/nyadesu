@@ -33,6 +33,10 @@ class Voice extends Plugin {
             this.providers[pName] = prov;
         }
 
+        this.addEventHandler("commandhandler", "client.disconnect", () => {
+            this.connections = {};
+        });
+
         this.addCommand(new PluginCommand("voice", {
             allowPM: false,
             onReturnSuccess: true,
