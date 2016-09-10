@@ -72,6 +72,3 @@ class VoiceConnection {
 }
 
 module.exports = VoiceConnection;
-
-
-// full on ghetto but makes it cleaner - i should devise a better way to do this

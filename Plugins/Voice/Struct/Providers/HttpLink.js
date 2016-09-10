@@ -1,7 +1,5 @@
 "use strict";
 
-const fetch = require("node-fetch");
-
 const Provider = require("../Provider")
     , Permission = require("../../../../Util/Permission");
 
