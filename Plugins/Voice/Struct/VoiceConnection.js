@@ -60,7 +60,7 @@ class VoiceConnection {
 
         this.nowPlaying = this.queue.shift();
         if (this.nowPlaying.isFile) {
-            this.connection.playFile(this.nowPlaying.rawLink, { inlineVolume: true });
+            this.connection.playResource(this.nowPlaying.rawLink, { inlineVolume: true });
         } else {
             this.nowPlaying.getStream()
                 .then(strim => this.connection.playStream(strim, { inlineVolume: true }));

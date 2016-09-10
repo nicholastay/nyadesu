@@ -16,11 +16,11 @@ class HttpLink extends Provider {
     }
 
     static get isFilePlay() {
-        return false;
+        return true;
     }
 
     static get requiredPermission() {
-        return Permission.BOT_ADMIN;
+        return Permission.BOT_FRIEND;
     }
 
     static getTitle(item) {
@@ -29,11 +29,6 @@ class HttpLink extends Provider {
 
     static getDuration() {
         return Promise.resolve(null);
-    }
-
-    static getStream(item) {
-        return fetch(item.rawLink)
-            .then(r => r.body); // fetch's body is a stream
     }
 }
 
