@@ -16,6 +16,8 @@ class Nyadesu {
         console.log("-------------------");
         console.log("");
 
+        this.scriptStart = Date.now();
+
         this.loadCore();
         this.Plugins._loadIndexed();
         this.Client.connect();
@@ -48,6 +50,10 @@ class Nyadesu {
 
     stop() {
         global.Nyadesu = undefined;
+    }
+
+    get scriptUptime() {
+        return Date.now() - this.scriptStart;
     }
 }
 

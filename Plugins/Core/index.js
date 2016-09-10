@@ -2,7 +2,8 @@
 
 const eris = require("eris")
     , fetch = require("node-fetch")
-    , htmlToText = require("html-to-text");
+    , htmlToText = require("html-to-text")
+    , humanizeDuration = require("humanize-duration");
 
 const Plugin = require("../../Base/Plugin")
     , BucketInfo = require("../../Base/BucketInfo")
@@ -32,6 +33,10 @@ class Core extends Plugin {
         }, this.testWebsiteCommand));
 
         // this.addCommand(new PluginCommand("fail", "deliberate promise reject", () => Promise.reject("o_o")));
+
+        this.addCommand(new PluginCommand("uptime", {
+            softReply: true
+        }, this.uptimeCommand));
          
         this.addEventHandler("commandhandler", "client.message.split", this.commandHandler.bind(this));
 
@@ -56,6 +61,11 @@ class Core extends Plugin {
 
     nyadesuCommand() {
         return "desunya! chatbot by Nexerq (nexerq@gmail.com) ~ 2016";
+    }
+
+    uptimeCommand() {
+        return `nyadesu has been connected and healthy for: \`${humanizeDuration(Nyadesu.Client.uptime)}\`.
+The bot has actually been running for: \`${humanizeDuration(Nyadesu.scriptUptime)}\`. (internet connection issues and the like can cause me to drop :<)`;
     }
 
     testWebsiteCommand(tail) {
