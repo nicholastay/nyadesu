@@ -47,6 +47,12 @@ class Plugins {
     }
 
     _load(pluginName, skipMetadata) {
+        if (Nyadesu.Config.Plugin[pluginName] && Nyadesu.Config.Plugin[pluginName].enabled === "0") {
+            this._unload(pluginName, true);
+            Nyadesu.Logging.warn("Plugins", `Plugin '${pluginName}' disabled in config, de-indexing and not loading.`);
+            return false;
+        }
+
         if (!skipMetadata) 
             this._indexPlugin(pluginName);
 
@@ -59,11 +65,14 @@ class Plugins {
         return true;
     }
 
-    _unload(pluginName) {
+    _unload(pluginName, skipHotDestroy) {
         if (!this[pluginName])
             return false;
         delete(this[pluginName]);
         this._plugins.splice(this._plugins.indexOf(pluginName), 1);
+
+        if (skipHotDestroy)
+            return true;
         return Hotreload.unload(path.join(this._pluginDir, pluginName));
     }
 
@@ -76,9 +85,7 @@ class Plugins {
     }
 
     _loadIndexed() {
-        for (let p of this._plugins)
-            this._load(p, true);
-
+        this._plugins.slice(0).forEach(p => this._load(p, true)); // have to clone the object so it doesnt skip -.-
         this._attachEvents();
         Nyadesu.Logging.success("Plugins", `Loaded the indexed plugin(s) and attached handler.`);
     }
@@ -92,6 +99,11 @@ class Plugins {
 
             // handle plugins
             for (let p of this._plugins) {
+                if (!this[p].loaded) {
+                    Nyadesu.Logging.warn("Plugins", `Plugin '${p}' not loaded but indexed!`);
+                    continue;
+                }
+
                 this[p].handler.handleRaw(m);
                 this[p].handler.handleSplit(firstWord, tail, m);
             }

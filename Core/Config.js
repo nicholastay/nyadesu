@@ -59,6 +59,9 @@ class Config {
         for (let p of Nyadesu.Plugins._plugins) {
             if (Nyadesu.Plugins[p].configDefaults)
                 pluginDefaults[p] = Nyadesu.Plugins[p].configDefaults;
+            else
+                pluginDefaults[p] = {};
+            pluginDefaults[p].enabled = 1;
         }
     }
 
