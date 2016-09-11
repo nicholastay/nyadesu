@@ -1,7 +1,7 @@
 "use strict";
 
-const events = require("events");
+const EventEmitter = require("eventemitter3");
 
-class Events extends events.EventEmitter {}
+class Events extends EventEmitter {}
 
 module.exports = Events;

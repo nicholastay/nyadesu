@@ -1,7 +1,5 @@
 "use strict";
 
-const ErisVoiceTransformer = require("eris/lib/util/VolumeTransformer");
-
 class VoiceConnection {
     constructor(connection, voiceChannel, textChannel) {
         this.connection = connection;
@@ -12,14 +10,13 @@ class VoiceConnection {
         this.nowPlaying = null;
         this.autoDisconnect = null; // disconnection timeout
 
-        connection.volumeTransformer = new ErisVoiceTransformer(); // create this in advance so we can set the volume
         connection.setVolume(0.15); // default it to 15% right away
 
         connection.on("end", () => {
             let res = this.playNext();
             if (!res) {
                 // nothing to play, auto d/c
-                this.autoDisconnect = setTimeout(() => this.destroy(), 10 * 60 * 60 * 1000); // 10 mins
+                this.autoDisconnect = setTimeout(() => this.destroy(), 10 * 60 * 1000); // 10 mins
             } else if (this.autoDisconnect) {
                 // clear timeout if there is one
                 clearTimeout(this.autoDisconnect);
@@ -59,14 +56,12 @@ class VoiceConnection {
         }
 
         this.nowPlaying = this.queue.shift();
-        if (this.nowPlaying.isFile) {
-            this.connection.playResource(this.nowPlaying.rawLink, { inlineVolume: true });
-        } else {
-            this.nowPlaying.getStream()
-                .then(strim => this.connection.playStream(strim, { inlineVolume: true }));
-        }
-
-        this.textChannel.createMessage("***Now Playing***: " + this.nowPlaying.friendlyName);
+        let p = this.nowPlaying.isFile ? Promise.resolve(this.nowPlaying.rawLink) : this.nowPlaying.getStream();
+        
+        p
+            .then(resource => this.connection.play(resource, { inlineVolume: true }))
+            .then(() => this.textChannel.createMessage("***Now Playing***: " + this.nowPlaying.friendlyName));
+        
         return true;
     }
 }

@@ -2,8 +2,6 @@
 
 const Eris = require("eris");
 
-const ErisMonkeypatch = require("../Util/eris-ooppatch/patch");
-
 class Client extends Eris {
     static get configDefaults() {
         return {
@@ -21,14 +19,7 @@ class Client extends Eris {
         this.on("messageCreate", m => Nyadesu.Events.emit("client.message", m));
 
         // patch
-        ErisMonkeypatch.patch(this);
-        otherErisPatches();
-
-        // reply thingies
-        this.replyMessage = (message, content, file) =>
-            this.createMessage(message.channel.id, (message.channel instanceof Eris.PrivateChannel) ? content : `${message.author.mention}: ${content}`, file);
-        this.softReplyMessage = (message, content, file) =>
-            this.createMessage(message.channel.id, (message.channel instanceof Eris.PrivateChannel) ? content : `\`${message.author.softMention}\`: ${content}`, file);
+        erisPatch(this);
 
         Nyadesu.Logging.success("Client", "Loaded Eris client + slight OOP patched.");
     }
@@ -37,14 +28,24 @@ class Client extends Eris {
 module.exports = Client;
 
 
-function otherErisPatches() {
-    // non generic patches
+function erisPatch(client) {
+    // generic patches
+    // eris doesnt have these, add for convenience
+    Eris.Message.prototype.createMessage = function(content, file) { return client.createMessage(this.channel.id, content, file); };
 
+
+    // non generic patches
     // user#discrim getterl
     Object.defineProperty(Eris.User.prototype, "softMention", { get: function() { return `${this.username}#${this.discriminator}`; } });
     Object.defineProperty(Eris.Member.prototype, "softMention", { get: function() { return `${this.user.username}#${this.user.discriminator}`; } });
 
+    // reply/softReply
+    client.replyMessage = (message, content, file) =>
+        client.createMessage(message.channel.id, (message.channel instanceof Eris.PrivateChannel) ? content : `${message.author.mention}: ${content}`, file);
+    client.softReplyMessage = (message, content, file) =>
+        client.createMessage(message.channel.id, (message.channel instanceof Eris.PrivateChannel) ? content : `\`${message.author.softMention}\`: ${content}`, file);
+
     // prototypes for our reply/softReply
-    Eris.Message.prototype.reply = function(content, file) { return Nyadesu.Client.replyMessage(this, content, file); };
-    Eris.Message.prototype.softReply = function(content, file) { return Nyadesu.Client.softReplyMessage(this, content, file); };
+    Eris.Message.prototype.reply = function(content, file) { return client.replyMessage(this, content, file); };
+    Eris.Message.prototype.softReply = function(content, file) { return client.softReplyMessage(this, content, file); };
 }
