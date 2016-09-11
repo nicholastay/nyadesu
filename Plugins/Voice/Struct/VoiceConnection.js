@@ -52,7 +52,7 @@ class VoiceConnection {
         }
 
         this.nowPlaying = this.queue.shift();
-        let p = this.nowPlaying.isFile ? Promise.resolve(this.nowPlaying.rawLink) : this.nowPlaying.getStream();
+        let p = this.nowPlaying.isFile ? this.nowPlaying.getFileLink() : this.nowPlaying.getStream();
         
         p
             .then(resource => this.connection.play(resource, { inlineVolume: true }))

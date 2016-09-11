@@ -199,10 +199,11 @@ class Voice extends Plugin {
               , eSeconds = _eSeconds.toString().length === 1 ? `0${_eSeconds}` : _eSeconds; // pad 0;
 
             let barsFilled = Math.round((elapsed / duration) * 15) - 1 // over 15 bars and -1 because circle in the middle
-              , barsBlank = 15 - barsFilled;
+              , barsBlank = 14 - barsFilled; // same -1 bar in center
 
+            // crappy <0 hack, idk
             r += `
->> **${"-".repeat(barsFilled)}o**${"-".repeat(barsBlank)} \`${eMinutes}:${eSeconds}/${minutes}:${seconds}\``;
+>> **${"-".repeat(barsFilled < 0 ? 0 : barsFilled)}o**${"-".repeat(barsFilled < 0 ? 14 : barsBlank)} \`${eMinutes}:${eSeconds}/${minutes}:${seconds}\``;
         }
 
         return r;

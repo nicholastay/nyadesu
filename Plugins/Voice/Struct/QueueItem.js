@@ -20,6 +20,11 @@ class QueueItem {
         return `Added ${this.provider.prototype.constructor.name} track \`${this.title}\` to the queue.`;
     }
 
+    getFileLink() {
+        this._dateElapse = Date.now(); // store
+        return Promise.resolve(this.rawLink);
+    }
+
     getStream() {
         if (this.isFile)
             throw new TypeError();
