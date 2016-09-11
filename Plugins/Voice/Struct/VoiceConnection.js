@@ -10,7 +10,7 @@ class VoiceConnection {
         this.nowPlaying = null;
         this.autoDisconnect = null; // disconnection timeout
 
-        connection.setVolume(0.15); // default it to 15% right away
+        this.volume = 0.15; // default it to 15% right away
 
         connection.on("end", () => {
             let res = this.playNext();
@@ -23,10 +23,6 @@ class VoiceConnection {
                 this.autoDisconnect = null;
             }
         });
-    }
-
-    get volume() {
-        return this.connection.volumeTransformer.volume;
     }
 
     destroy() {
@@ -60,6 +56,7 @@ class VoiceConnection {
         
         p
             .then(resource => this.connection.play(resource, { inlineVolume: true }))
+            .then(() => this.connection.setVolume(this.volume))
             .then(() => this.textChannel.createMessage("***Now Playing***: " + this.nowPlaying.friendlyName));
         
         return true;

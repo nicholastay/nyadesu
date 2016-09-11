@@ -221,7 +221,7 @@ class Voice extends Plugin {
         if (isNaN(vol) || vol < 0 || vol > 200)
             throw new UserError("Invalid volume, should be a number as a percentage between 0-200%, with or without a % sign...");
 
-        connection.connection.setVolume(vol / 100);
+        connection.volume = vol / 100;
         return `✅ The volume is now set to: ${connection.volume * 100}%.`;
     }
 
