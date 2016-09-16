@@ -10,19 +10,29 @@ class VoiceConnection {
         this.nowPlaying = null;
         this.autoDisconnect = null; // disconnection timeout
 
-        this.volume = 0.15; // default it to 15% right away
+        this._volume = 0.15; // default it to 15% right away
 
         connection.on("end", () => {
             let res = this.playNext();
             if (!res) {
                 // nothing to play, auto d/c
-                this.autoDisconnect = setTimeout(() => this.destroy(), 10 * 60 * 1000); // 10 mins
+                this.autoDisconnect = setTimeout(() => {
+                    this.textChannel.createMessage("It has been 10 minutes, auto-leaving the voice channel, good bye...");
+                    this.destroy();
+                }, 10 * 60 * 1000); // 10 mins
             } else if (this.autoDisconnect) {
                 // clear timeout if there is one
                 clearTimeout(this.autoDisconnect);
                 this.autoDisconnect = null;
             }
         });
+    }
+
+    get volume() { return this._volume; }
+    set volume(v) {
+        this._volume = v;
+        if (this.nowPlaying)
+            this.connection.setVolume(v);
     }
 
     destroy() {
