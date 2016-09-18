@@ -209,11 +209,17 @@ class Voice extends Plugin {
         return r;
     }
 
+    _generateVolumeDisplay(volumePercent) {
+        let vol = Math.round(volumePercent);
+        let volB = Math.round(volumePercent / 10) - 1; // -1 for the o
+        return `[**${"-".repeat(volB)}**o${"-".repeat(10-volB)}] \`${vol}%\``;
+    }
+
     volumeCommand(tail, author, channel) {
         let connection = this._ensureConnection(channel);
 
         if (!tail[0])
-            return `The volume is currently set at: ${connection.volume * 100}%.`;
+            return `Volume: ${this._generateVolumeDisplay(connection.volume * 100)}`;
 
         if (!Nyadesu.Permissions.hasPermission(author, channel.guild, Permission.SERVER_MOD))
             throw new UserError("You do not have permission to change the volume.");
@@ -223,7 +229,7 @@ class Voice extends Plugin {
             throw new UserError("Invalid volume, should be a number as a percentage between 0-200%, with or without a % sign...");
 
         connection.volume = vol / 100;
-        return `✅ The volume is now set to: ${connection.volume * 100}%.`;
+        return `✅ Volume updated: ${this._generateVolumeDisplay(vol)}`;
     }
 
     queueCommand(tail, author, channel) {
