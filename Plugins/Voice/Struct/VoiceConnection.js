@@ -18,6 +18,7 @@ class VoiceConnection {
                 // nothing to play, auto d/c
                 this.autoDisconnect = setTimeout(() => {
                     this.textChannel.createMessage("It has been 10 minutes, auto-leaving the voice channel, good bye...");
+                    clearTimeout(this.autoDisconnect);
                     this.destroy();
                 }, 10 * 60 * 1000); // 10 mins
             } else if (this.autoDisconnect) {
