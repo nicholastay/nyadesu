@@ -22,27 +22,22 @@ class QueueItem {
         return `Added ${this.provider.prototype.constructor.name} track \`${this.title}\` to the queue.`;
     }
 
-    getFileLink() {
-        this._dateElapse = Date.now(); // store
-        return Promise.resolve(this.rawLink);
-    }
+    getPlay() {
+        let fun = this.isFile ? this.provider.getFileLink(this) : this.provider.getStream(this);
 
-    getStream() {
-        if (this.isFile)
-            throw new TypeError();
-
-        return this.provider.getStream(this)
+        return fun
             .then(s => {
-                this._dateElapse = Date.now(); // store this
+                this._dateElapse = Date.now(); // store
                 return s;
             });
     }
 
     getInfo() {
-        return this.provider.getTitle(this)
-            .then(t => this.title = t)
-            .then(() => this.provider.getDuration(this))
-            .then(d => this.duration = d);
+        return this.provider.getInfo(this)
+            .then(() => {
+                this.title = this.provider.getTitle(this);
+                this.duration = this.provider.getDuration(this);
+            });
     }
 
     get friendlyName() {

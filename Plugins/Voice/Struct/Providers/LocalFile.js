@@ -27,12 +27,12 @@ class LocalFile extends Provider {
     }
 
     static getTitle(item) {
-        return Promise.resolve(item.rawLink.split(path.sep).pop());
+        return item.rawLink.split(path.sep).pop();
     }
 
     static getDuration(item) {
         if (!ffprobable)
-            return Promise.resolve(null);
+            return null;
 
         try {
             let c = cpoc.spawnSync("ffprobe", [
@@ -43,16 +43,16 @@ class LocalFile extends Provider {
             ]);
 
             if (c.error)
-                return Promise.resolve(null);
+                return null;
 
             let rawData = c.stdout.toString() || c.stderr.toString(); // windows goes to stderr
             let data = JSON.parse(rawData);
             if (data && data.format && data.format.duration)
-                return Promise.resolve(Math.round(Number(data.format.duration))); // we just want a solid round integer
-            return Promise.resolve(null);
+                return Math.round(Number(data.format.duration)); // we just want a solid round integer
+            return null;
         }
         catch (e) {
-            return Promise.resolve(null);
+            return null;
         }
     }
 }

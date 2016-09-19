@@ -33,11 +33,11 @@ class Twitch extends Provider {
     }
 
     static getTitle(item) {
-        return Promise.resolve(item.rawLink);
+        return item.rawLink;
     }
 
     static getDuration() {
-        return Promise.resolve(null);
+        return null;
     }
 
     static getStream(item) {

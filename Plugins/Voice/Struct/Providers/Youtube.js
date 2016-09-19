@@ -36,29 +36,18 @@ class Youtube extends Provider {
     }
 
     static getTitle(item) {
-        let prom;
-        if (!this._providerData)
-            prom = this.getInfo(item);
-        else
-            prom = Promise.resolve(this._providerData);
-
-        return prom.then(info => info.title && info.author ? `${info.title} (by ${info.author})` : `Video \`<${item.rawLink}>\` [was unable to get metadata]`);
+        this._ensureProviderData(item);
+        let info = item._providerData;
+        return info.title && info.author ? `${info.title} (by ${info.author})` : `Video \`<${item.rawLink}>\` [was unable to get metadata]`;
     }
 
     static getDuration(item) {
-        let prom;
-        if (!this._providerData)
-            prom = this.getInfo(item);
-        else
-            prom = Promise.resolve(this._providerData);
-
-        return prom.then(info => info.length_seconds);
+        this._ensureProviderData(item);
+        return item._providerData.length_seconds;
     }
 
     static getStream(item) {
-        if (!item._providerData)
-            return new Error("no provider data z.z");
-
+        this._ensureProviderData(item);
         let stream = ytdl.downloadFromInfo(item._providerData, { quality: 140 })
             .on("error", e => {
                 if (e.code === "ECONNRESET")

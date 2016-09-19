@@ -62,9 +62,7 @@ class VoiceConnection {
         }
 
         this.nowPlaying = this.queue.shift();
-        let p = this.nowPlaying.isFile ? this.nowPlaying.getFileLink() : this.nowPlaying.getStream();
-        
-        p
+        this.nowPlaying.getPlay()
             .then(resource => this.connection.play(resource, { inlineVolume: true }))
             .then(() => this.connection.setVolume(this.volume))
             .then(() => this.textChannel.createMessage("***Now Playing***: " + this.nowPlaying.friendlyName));

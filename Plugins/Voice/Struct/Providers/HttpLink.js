@@ -22,11 +22,11 @@ class HttpLink extends Provider {
     }
 
     static getTitle(item) {
-        return Promise.resolve(item.rawLink.split("/").pop());
+        return item.rawLink.split("/").pop();
     }
 
     static getDuration() {
-        return Promise.resolve(null);
+        return null;
     }
 }
 
