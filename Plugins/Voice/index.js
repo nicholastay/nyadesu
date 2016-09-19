@@ -56,12 +56,17 @@ class Voice extends Plugin {
             requireInput: 1
         }, this.playCommand.bind(this)));
 
-        this.addCommand(new PluginCommand("fstop", {
+        this.addCommand(new PluginCommand("fskip", {
             allowPM: false,
             softReply: true,
             permission: Permission.SERVER_MOD,
             onReturnSuccess: true
-        }, this.forceStopCommand.bind(this)));
+        }, this.forceSkipCommand.bind(this)));
+
+        this.addCommand(new PluginCommand("skip", {
+            allowPM: false,
+            reply: true
+        }, this.skipCommand.bind(this)));
 
         this.addCommand(new PluginCommand("np", {
             allowPM: false
@@ -120,7 +125,7 @@ class Voice extends Plugin {
     }
 
     playCommand(tail, author, channel) {
-        let connection = this._ensureConnection(channel);
+        let connection = this._ensureConnection(channel, author);
 
         let tailJoin = tail.join(" ");
 
@@ -167,14 +172,48 @@ class Voice extends Plugin {
         });
     }
 
-    forceStopCommand(tail, author, channel) {
-        let connection = this._ensureConnection(channel);
+    skipCommand(tail, author, channel) {
+        let connection = this._ensureConnection(channel, author);
+        if (!connection.nowPlaying)
+            throw new UserError("There is no track currently playing in this server...");
 
+        if (connection.nowPlaying.voteSkip) {
+            // already in voting.
+            if (connection.nowPlaying.voteSkip.voted.indexOf(author.id) > -1)
+                throw new UserError("You have already voted to skip this track!");
+            if (connection.nowPlaying.voteSkip.members.indexOf(author.id) < 0)
+                throw new UserError("You were not in this voice channel at time of vote start, you do not have the right to vote!");
+
+            connection.nowPlaying.voteSkip.voted.push(author.id);
+            if (connection.nowPlaying.voteSkip.voted.length === connection.nowPlaying.votesRequired) {
+                connection.connection.stopPlaying();
+                return `The vote to skip the current track has succeeded! Skipped the current playing track.`;
+            }
+            return `You have voted to skip the current playing track. **${connection.nowPlaying.voteSkip.voted.length}/${connection.nowPlaying.voteSkip.votesRequired} votes fulfilled.**`;
+        }
+
+        // start a new vote
+        let members = connection.voiceChannel.voiceMembers.filter(m => m.id !== Nyadesu.Client.user.id && !m.user.bot).map(u => u.id); // store only these members can vote - filter self & compliant bots
+        if (members.length < 2) {
+            connection.connection.stopPlaying();
+            return "✅ You are the only person in the voice channel: skipped the current playing track.";
+        }
+
+        connection.nowPlaying.voteSkip = {
+            members: members,
+            votesRequired: members.length === 2 ? 2 : Math.round(members.length / 2), // both people must vote in a 2 person lobby
+            voted: [author.id]
+        };
+        return `You have started a vote to skip the current playing track. **1/${connection.nowPlaying.voteSkip.votesRequired} votes fulfilled.**`;
+    }
+
+    forceSkipCommand(tail, author, channel) {
+        let connection = this._ensureConnection(channel);
         if (!connection.nowPlaying)
             throw new UserError("There is no track currently playing in this server...");
 
         connection.connection.stopPlaying();
-        return "Stopped the current playing track.";
+        return "Skipped the current playing track.";
     }
 
     nowPlayingCommand(tail, author, channel) {
@@ -216,7 +255,7 @@ class Voice extends Plugin {
     }
 
     volumeCommand(tail, author, channel) {
-        let connection = this._ensureConnection(channel);
+        let connection = this._ensureConnection(channel, author);
 
         if (!tail[0])
             return `Volume: ${this._generateVolumeDisplay(connection.volume * 100)}`;
@@ -252,12 +291,17 @@ class Voice extends Plugin {
         return r;
     }
 
-    _ensureConnection(channel) {
+    _ensureConnection(channel, author) {
         if (!this.connections[channel.guild.id])
             throw new UserError("There is no voice connection currently present in this server...");
 
         if (this.connections[channel.guild.id].textChannel.id !== channel.id)
             throw new UserError(`There is already a voice connection present in this server, but it is bound to another text channel (${this.connections[channel.guild.id].textChannel.mention}).`);
+
+        if (author) {
+            if (!this.connections[channel.guild.id].voiceChannel.voiceMembers.get(author.id))
+                throw new UserError("You are not currently in the voice channel. You cannot use this command.");
+        }
 
         return this.connections[channel.guild.id];
     }

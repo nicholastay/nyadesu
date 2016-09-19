@@ -34,7 +34,7 @@ class Plugin {
 
     detachAllEvents() {
         for (let k in this.events) {
-            Nyadesu.Events.removeEventListener(this.events[k].event, this.events[k].handler);
+            Nyadesu.Events.removeListener(this.events[k].event, this.events[k].handler);
             delete(this.events[k]);
         }
     }

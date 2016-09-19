@@ -14,6 +14,8 @@ class QueueItem {
         this._dateElapse = null; // used to track how much time elapsed
 
         this.isFile = this.provider.isFilePlay;
+
+        this.voteSkip = null; // vote skipping
     }
 
     get addedMessage() {
