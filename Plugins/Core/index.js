@@ -1,17 +1,12 @@
 "use strict";
 
-const eris = require("eris")
-    , fetch = require("node-fetch")
-    , htmlToText = require("html-to-text")
+const Eris = require("eris")
     , humanizeDuration = require("humanize-duration");
 
 const Plugin = require("../../Base/Plugin")
-    , BucketInfo = require("../../Base/BucketInfo")
     , PluginCommand = require("../../Base/PluginCommand")
     , Permission = require("../../Util/Permission")
     , UserError = require("../../Base/UserError");
-
-const DOWNFOREVERYONE_REGEX = /just you\. (.*?) is up\./;
 
 class Core extends Plugin {
     constructor() {
@@ -25,12 +20,6 @@ class Core extends Plugin {
         // });
         
         this.addCommand(new PluginCommand("nyadesu", this.nyadesuCommand));
-
-        this.addCommand(new PluginCommand("testwebsite", {
-            reply: true,
-            requireInput: 1,
-            rateLimitedInfo: new BucketInfo("Core.testWebsite", 3, "minute", { perUser: true })
-        }, this.testWebsiteCommand));
 
         // this.addCommand(new PluginCommand("fail", "deliberate promise reject", () => Promise.reject("o_o")));
 
@@ -68,23 +57,6 @@ class Core extends Plugin {
 The bot has actually been running for: \`${humanizeDuration(Nyadesu.scriptUptime)}\`. (internet connection issues and the like can cause me to drop :<)`;
     }
 
-    testWebsiteCommand(tail) {
-        let website = tail.join(" ");
-        return fetch(`http://downforeveryoneorjustme.com/${website}`)
-            .then(r => r.text())
-            .then(d => {
-                if (d.indexOf("doesn't look like a site") >= 0)
-                    throw new UserError("Invalid website, please go away :<");
-
-                let msg = htmlToText.fromString(d, { ignoreHref: true })
-                  , reg = DOWNFOREVERYONE_REGEX.exec(msg);
-                if (!reg)
-                    return `❌ It doesn't seem to be just you, \`${website}\` seems to be offline.`;
-
-                return `✅ \`${reg[1]}\` seems to be up, online and functional.`;
-            });
-    }
-
     recacheCommandKeys(guildId) {
         if (guildId !== null && typeof guildId !== "string")
             throw new TypeError();
@@ -113,7 +85,7 @@ The bot has actually been running for: \`${humanizeDuration(Nyadesu.scriptUptime
     }
 
     commandHandler(trigger, tail, message) {
-        if (message.author.id === Nyadesu.Client.user.id || message.channel instanceof eris.PrivateChannel || !this.commandKeys[message.channel.guild.id] || this.commandKeys[message.channel.guild.id].indexOf(trigger) < 0)
+        if (message.author.id === Nyadesu.Client.user.id || message.channel instanceof Eris.PrivateChannel || !this.commandKeys[message.channel.guild.id] || this.commandKeys[message.channel.guild.id].indexOf(trigger) < 0)
             return;
 
         Nyadesu.Database
