@@ -27,7 +27,7 @@ class Core extends Plugin {
         this.addCommand(new PluginCommand("nyadesu", this.nyadesuCommand));
 
         this.addCommand(new PluginCommand("testwebsite", {
-            softReply: true,
+            reply: true,
             requireInput: 1,
             rateLimitedInfo: new BucketInfo("Core.testWebsite", 3, "minute", { perUser: true })
         }, this.testWebsiteCommand));
@@ -72,11 +72,11 @@ The bot has actually been running for: \`${humanizeDuration(Nyadesu.scriptUptime
         let website = tail.join(" ");
         return fetch(`http://downforeveryoneorjustme.com/${website}`)
             .then(r => r.text())
-            .then(r => {
-                if (r.data.indexOf("doesn't look like a site") >= 0)
-                    return `❌ Invalid website, please go away :<`;
+            .then(d => {
+                if (d.indexOf("doesn't look like a site") >= 0)
+                    throw new UserError("Invalid website, please go away :<");
 
-                let msg = htmlToText.fromString(r.data, { ignoreHref: true })
+                let msg = htmlToText.fromString(d, { ignoreHref: true })
                   , reg = DOWNFOREVERYONE_REGEX.exec(msg);
                 if (!reg)
                     return `❌ It doesn't seem to be just you, \`${website}\` seems to be offline.`;
