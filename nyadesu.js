@@ -8,14 +8,16 @@ global.Promise = require("bluebird");
 class Nyadesu {
     start() {
         if (global.Nyadesu)
-            throw new Error("An instance of Nyadesu is already running in this process, please stop then reload.");
+            throw new Error("An instance of nyadesu is already running in this process, please stop then reload.");
         global.Nyadesu = this;
+        this.version = require("./package.json").version;
 
         console.log("-------------------");
-        console.log("Nyadesu, v0.1");
+        console.log(`nyadesu, v${this.version}`);
         console.log("-------------------");
         console.log("");
 
+        this.alive = false;
         this.scriptStart = Date.now();
 
         this.loadCore();
@@ -26,8 +28,17 @@ class Nyadesu {
         this.Events.emit("nyadesu.loaded");
 
         // temp
-        this.Events.on("client.ready", () => this.Logging.success("Client", "Ready / in."));
-        this.Events.on("client.disconnect", () => this.Logging.warn("Client", "Disconnected, will try auto-reconnect..."));
+        this.Events.on("client.ready", () => {
+            this.alive = true;
+            this.Logging.success("Client", "Ready / in.");
+            this.Client.editStatus(false, {
+                name: `<nyadesu v${this.version}>`
+            });
+        });
+        this.Events.on("client.disconnect", () => {
+            this.alive = false;
+            this.Logging.warn("Client", "Disconnected, will try auto-reconnect...");
+        });
     }
 
     loadCore() {
