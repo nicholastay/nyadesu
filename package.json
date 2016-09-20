@@ -25,6 +25,7 @@
     "node-fetch": "^1.6.0",
     "nodesu": "^0.6.0",
     "pg": "^6.1.0",
+    "simple-git": "^1.50.0",
     "ytdl-core": "^0.7.17"
   },
   "optionalDependencies": {
