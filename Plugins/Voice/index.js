@@ -80,6 +80,20 @@ class Voice extends Plugin {
             allowPM: false,
             reply: true
         }, this.volumeCommand.bind(this)));
+
+        this.addCommand(new PluginCommand("voicequeuelimit", {
+            reply: true,
+            allowPM: false,
+            permission: Permission.SERVER_ADMIN,
+            onReturnSuccess: true
+        }, this.setQueueLimitCommand.bind(this)));
+
+        this.addCommand(new PluginCommand("voicedupes", {
+            reply: true,
+            allowPM: false,
+            permission: Permission.SERVER_ADMIN,
+            onReturnSuccess: true
+        }, this.toggleDupesCommand.bind(this)));
     }
 
     voiceCommand(tail, author, channel) {
@@ -124,10 +138,37 @@ class Voice extends Plugin {
             .then(() => `${status ? "Disallowed" : "Allowed"} voice functionality to be used on this server.`);
     }
 
+    setQueueLimitCommand(tail, author, channel) {
+        if (!Nyadesu.SettingsManager.getSetting(channel.guild.id, "voice_allowed"))
+            throw new UserError(`This server is not allowed to use voice functionality, as it is very resource and bandwidth heavy. Please ask my owner for instructions if you insist.`);
+
+        let lim = Number(tail[0]);
+        if (!lim || lim < 0 || lim > this.config.maxQueuePerServer)
+            throw new UserError(`Invalid number for the limit per user, must be between 0 and ${this.config.maxQueuePerServer}.`);
+
+        return Nyadesu.SettingsManager.editSetting(channel.guild.id, "voice_userlimit", lim)
+            .then(() => `Queue limit for regular server users set to ${lim}.`);
+    }
+
+    toggleDupesCommand(tail, author, channel) {
+        if (!Nyadesu.SettingsManager.getSetting(channel.guild.id, "voice_allowed"))
+            throw new UserError(`This server is not allowed to use voice functionality, as it is very resource and bandwidth heavy. Please ask my owner for instructions if you insist.`);
+
+        let status = Nyadesu.SettingsManager.getSetting(channel.guild.id, "voice_dupes");
+        return Nyadesu.SettingsManager.editSetting(channel.guild.id, "voice_dupes", status ? false : true)
+            .then(() => `${status ? "Disallowed" : "Allowed"} duplicate song requests to be used on this server.`);
+    }
+
     playCommand(tail, author, channel) {
         let connection = this._ensureConnection(channel, author);
-
         let tailJoin = tail.join(" ");
+
+        let serverLimit = Nyadesu.SettingsManager.getSetting(channel.guild.id, "voice_userlimit");
+        if (serverLimit && !Nyadesu.Permissions.hasPermission(author, channel.guild, Permission.SERVER_MOD) && connection.queue.filter(q => q.requester.id === author.id).length >= serverLimit)
+            throw new UserError(`We have reached the server-wide queue limit per regular user of ${serverLimit}. Song was not added to queue.`);
+
+        if (connection.queue.length >= this.config.maxQueuePerServer)
+            throw new UserError(`We have reached the maximum globally allowed limit of ${this.config.maxQueuePerServer} song requests per server. Song was not added to queue.`);
 
         let lookup, provider;
         const doLast = ["HttpLink"]; // do these last as these are to cover a broader scope, do more specific regexs first
@@ -160,6 +201,10 @@ class Voice extends Plugin {
             if (!Nyadesu.Permissions.hasPermission(author, channel.guild, lookup.requiredPermission))
                 throw new UserError("You do not have permission to use this playback source...");
         }
+
+        let serverDupes = Nyadesu.SettingsManager.getSetting(channel.guild.id, "voice_dupes");
+        if (!serverDupes && ((connection.nowPlaying && connection.nowPlaying.rawLink === lookup && connection.nowPlaying.provider.prototype.constructor.name === provider.prototype.constructor.name) || connection.queue.find(q => provider.prototype.constructor.name === q.provider.prototype.constructor.name && q.rawLink === lookup)))
+            throw new UserError("This server has disabled duplicate voice queue items. Item was not added to the song queue.");
 
         return connection.addToQueue(new QueueItem(connection, {
             requester: author,
