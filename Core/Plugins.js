@@ -69,7 +69,7 @@ class Plugins {
         if (!this[pluginName])
             return false;
         if (this[pluginName].handler)
-            this[pluginName].handler.detachAllEvents();
+            this[pluginName].handler.destroy();
         delete(this[pluginName]);
         this._plugins.splice(this._plugins.indexOf(pluginName), 1);
 

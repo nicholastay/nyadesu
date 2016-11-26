@@ -1,7 +1,8 @@
 "use strict";
 
 class VoiceConnection {
-    constructor(connection, voiceChannel, textChannel) {
+    constructor(plugin, connection, voiceChannel, textChannel) {
+        this.plugin = plugin;
         this.connection = connection;
         this.voiceChannel = voiceChannel;
         this.textChannel = textChannel;
@@ -9,6 +10,7 @@ class VoiceConnection {
         this.queue = [];
         this.nowPlaying = null;
         this.autoDisconnect = null; // disconnection timeout
+        this._setIdleTimeout();
 
         this._volume = 0.15; // default it to 15% right away
 
@@ -16,14 +18,10 @@ class VoiceConnection {
             let res = this.playNext();
             if (!res) {
                 // nothing to play, auto d/c
-                this.autoDisconnect = setTimeout(() => {
-                    this.textChannel.createMessage("It has been 10 minutes, auto-leaving the voice channel, good bye...");
-                    clearTimeout(this.autoDisconnect);
-                    this.destroy();
-                }, 10 * 60 * 1000); // 10 mins
+                this._setIdleTimeout();
             } else if (this.autoDisconnect) {
                 // clear timeout if there is one
-                clearTimeout(this.autoDisconnect);
+                this.plugin._clearTimeout(this.autoDisconnect);
                 this.autoDisconnect = null;
             }
         });
@@ -36,9 +34,19 @@ class VoiceConnection {
             this.connection.setVolume(v);
     }
 
+    _setIdleTimeout() {
+        this.autoDisconnect = this.plugin._setTimeout(() => {
+            this.textChannel.createMessage("It has been 10 minutes, auto-leaving the voice channel, good bye...");
+            this.destroy();
+        }, 10 * 60 * 1000); // 10 mins
+    }
+
     destroy() {
-        Nyadesu.Client.leaveVoiceChannel(this.voiceChannel.id);
-        delete(Nyadesu.Plugins.Voice.handler.connections[this.textChannel.guild.id]);
+        if (this.autoDisconnect)
+            this.plugin._clearTimeout(this.autoDisconnect);
+        
+        return Nyadesu.Client.leaveVoiceChannel(this.voiceChannel.id)
+            .then(() => delete(Nyadesu.Plugins.Voice.handler.connections[this.textChannel.guild.id]));
     }
 
     addToQueue(item) {

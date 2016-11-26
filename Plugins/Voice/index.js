@@ -102,9 +102,8 @@ class Voice extends Plugin {
 
         if (this.connections[channel.guild.id]) {
             if (this.connections[channel.guild.id].textChannel.id === channel.id) {
-                Nyadesu.Client.leaveVoiceChannel(this.connections[channel.guild.id].voiceChannel.id);
-                delete(this.connections[channel.guild.id]);
-                return "Successfully left the voice channel and unbound.";
+                return this.connections[channel.guild.id].destroy()
+                    .then(() => "Successfully left the voice channel and unbound.");
             }
             
             throw new UserError(`There is already a voice connection in this server and the text channel is bound in ${this.connections[channel.guild.id].textChannel.mention}.`);
@@ -126,7 +125,7 @@ class Voice extends Plugin {
 
         return Nyadesu.Client.joinVoiceChannel(vc.id)
             .then(conn => {
-                this.connections[channel.guild.id] = new VoiceConnection(conn, vc, channel);
+                this.connections[channel.guild.id] = new VoiceConnection(this, conn, vc, channel);
                 return "Successfully joined the voice channel and bound to this text channel.";
             });
     }

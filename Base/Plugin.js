@@ -10,6 +10,7 @@ class Plugin {
         this.rawHandlers = {};
         this.commands = {};
         this.events = {};
+        this.timeouts = [];
     }
 
     get config() {
@@ -32,11 +33,37 @@ class Plugin {
         Nyadesu.Events.on(event, handler);
     }
 
+    destroy() {
+        this.detachAllEvents();
+        this.destroyTimeouts();
+        return true;
+    }
+
     detachAllEvents() {
         for (let k in this.events) {
             Nyadesu.Events.removeListener(this.events[k].event, this.events[k].handler);
             delete(this.events[k]);
         }
+    }
+
+    _setTimeout(fun, delay) {
+        let t = setTimeout(() => {
+            fun();
+            this.timeouts.splice(this.timeouts.indexOf(t), 1);
+        }, delay);
+        this.timeouts.push(t);
+        return t;
+    }
+
+    _clearTimeout(t) {
+        clearTimeout(t);
+        this.timeouts.splice(this.timeouts.indexOf(t), 1);
+        return true;
+    }
+
+    destroyTimeouts() {
+        this.timeouts.forEach(clearTimeout);
+        this.timeouts = [];
     }
 
     handleRaw(message) {
