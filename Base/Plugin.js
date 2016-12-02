@@ -166,6 +166,15 @@ class Plugin {
         } else {
             if (!content.color)
                 content.color = 4446457; // light blue
+            if (!content.footer && command.embedFooter) {
+                if (!content.timestamp)
+                    content.timestamp = new Date();
+
+                content.footer = {
+                    text: `powered by nyadesu v${Nyadesu.version}`,
+                    icon_url: "https://i.imgur.com/2eJY0uo.png"
+                };
+            }
 
             prom = message.createMessage({ embed: content });
         }
@@ -173,6 +182,8 @@ class Plugin {
 
         if (command.autoCleanup)
             prom.then(m => setTimeout(() => m.delete(), command.autoCleanup));
+
+        prom.catch(e => this._throwErr("SendOff", message, e));
     }
 
     _throwErr(mod, message, e) {

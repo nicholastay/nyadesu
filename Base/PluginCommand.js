@@ -17,6 +17,7 @@ class PluginCommand {
         this.allowIgnoredChannels = options.allowIgnoredChannels || false;
 
         this.embed = options.embed || false;
+        this.embedFooter = options.embedFooter || false;
         this.reply = options.reply || false;
         this.softReply = options.softReply || false;
         this.onReturnSuccess = options.onReturnSuccess || false; // [tick] xx...
