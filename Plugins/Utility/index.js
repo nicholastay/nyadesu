@@ -18,9 +18,10 @@ class Utility extends Plugin {
         super();
 
         this.addCommand(new PluginCommand("testwebsite", {
-            reply: true,
             requireInput: 1,
-            rateLimitedInfo: new BucketInfo("Core.testWebsite", 3, "minute", { perUser: true })
+            rateLimitedInfo: new BucketInfo("Core.testWebsite", 3, "minute", { perUser: true }),
+            embed: true,
+            embedFooter: true
         }, this.testWebsiteCommand));
 
         this.addCommand(new PluginCommand("nyaupdates", this.updatesCommand));
@@ -35,11 +36,22 @@ class Utility extends Plugin {
                     throw new UserError("Invalid website, please go away :<");
 
                 let msg = htmlToText.fromString(d, { ignoreHref: true })
-                  , reg = DOWNFOREVERYONE_REGEX.exec(msg);
-                if (!reg)
-                    return `❌ It doesn't seem to be just you, \`${website}\` seems to be offline.`;
+                  , reg = DOWNFOREVERYONE_REGEX.exec(msg)
+                  , up = !!reg;
+                // if (!reg)
+                //     return `❌ It doesn't seem to be just you, \`${website}\` seems to be offline.`;
 
-                return `✅ \`${reg[1]}\` seems to be up, online and functional.`;
+                // return `✅ \`${reg[1]}\` seems to be up, online and functional.`;
+
+                return {
+                    title: `Website Status Check`,
+                    description: up ? `${reg[1].split("/").pop()} is currently ONLINE and functional. ✅` : `It doesn't seem to be just you, ${website.split("/").pop()} seems to be DOWN. ❌`,
+                    color: up ? 2026017 : 12525600,
+                    footer: {
+                        text: `powered by nyadesu v${Nyadesu.version} & downforeveryoneorjustme`,
+                        icon_url: "https://i.imgur.com/2eJY0uo.png"
+                    }
+                };
             });
     }
 
