@@ -140,10 +140,10 @@ class Plugin {
                         return;
                     this._sendCmdMsg(command, message, m);
                 }).catch(e => this._throwErr(command.trigger, message, e));
-            } else if (typeof c === "string") {
+            } else if (command.embed || (typeof c === "string")) {
                 this._sendCmdMsg(command, message, c);
             } else if (c !== null) {
-                this._throwErr(command.trigger, message, "Invalid return type, must be Promise/string/null.");
+                this._throwErr(command.trigger, message, "Invalid return type, must be Promise/string/embed-object/null.");
             }
         };
         
@@ -151,16 +151,25 @@ class Plugin {
     }
 
     _sendCmdMsg(command, message, content) {
-        if (command.onReturnSuccess)
-            content = `✅ ${content}`;
-
         let prom;
-        if (command.reply)
-            prom = message.reply(content);
-        else if (command.softReply)
-            prom = message.softReply(content);
-        else
-            prom = message.createMessage(content);
+
+        if (!command.embed) {
+            if (command.onReturnSuccess)
+                content = `✅ ${content}`;
+
+            if (command.reply)
+                prom = message.reply(content);
+            else if (command.softReply)
+                prom = message.softReply(content);
+            else
+                prom = message.createMessage(content);
+        } else {
+            if (!content.color)
+                content.color = 4446457; // light blue
+
+            prom = message.createMessage({ embed: content });
+        }
+        
 
         if (command.autoCleanup)
             prom.then(m => setTimeout(() => m.delete(), command.autoCleanup));

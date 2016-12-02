@@ -1,7 +1,9 @@
 "use strict";
 
 const fs = require("fs")
-    , fetch = require("node-fetch");
+    , fetch = require("node-fetch")
+    , humanizeDuration = require("humanize-duration")
+    , os = require("os");
 
 const Plugin = require("../../Base/Plugin")
     , PluginCommand = require("../../Base/PluginCommand")
@@ -25,6 +27,10 @@ class Admin extends Plugin {
             requireInput: 1,
             softReply: true
         }, this.setAvatarCommand));
+
+        this.addCommand(new PluginCommand("sysstats", {
+            embed: true
+        }, this.sysStatsCommand));
     }
 
     evalCommand(tail, author) {
@@ -72,6 +78,48 @@ class Admin extends Plugin {
             .then(d => "data:image/jpg;base64," + d.toString('base64'))
             .then(a => Nyadesu.Client.editSelf({ avatar: a }))
             .then(() => "New avatar successfully set.");
+    }
+
+    sysStatsCommand() {
+        let mem = process.memoryUsage();
+
+        return {
+            title: `nyadesu v${Nyadesu.version}`,
+            type: "rich",
+            description: "sys stats on the fly!",
+            fields: [
+                {
+                    name: "uptime (conn)",
+                    value: humanizeDuration(Nyadesu.Client.uptime),
+                    inline: true
+                },
+                {
+                    name: "uptime (script)",
+                    value: humanizeDuration(Nyadesu.scriptUptime),
+                    inline: true
+                },
+                {
+                    name: "uptime (host)",
+                    value: humanizeDuration(os.uptime() * 1000),
+                    inline: true
+                },
+                {
+                    name: "mem (heap used)",
+                    value: `${(mem.heapUsed/1024/1024).toFixed(2)}Mb`,
+                    inline: true
+                },
+                {
+                    name: "mem (heap total)",
+                    value: `${(mem.heapTotal/1024/1024).toFixed(2)}Mb`,
+                    inline: true
+                },
+                {
+                    name: "mem (rss)",
+                    value: `${(mem.rss/1024/1024).toFixed(2)}Mb`,
+                    inline: true
+                }
+            ]
+        };
     }
 }
 

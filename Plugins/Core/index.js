@@ -1,7 +1,6 @@
 "use strict";
 
-const Eris = require("eris")
-    , humanizeDuration = require("humanize-duration");
+const Eris = require("eris");
 
 const Plugin = require("../../Base/Plugin")
     , PluginCommand = require("../../Base/PluginCommand")
@@ -19,7 +18,9 @@ class Core extends Plugin {
         //         m.createMessage("desunya! chatbot by Nexerq (nexerq@gmail.com) ~ 2016");
         // });
         
-        this.addCommand(new PluginCommand("nyadesu", this.nyadesuCommand));
+        this.addCommand(new PluginCommand("nyadesu", {
+            embed: true
+        }, this.nyadesuCommand));
 
         // this.addCommand(new PluginCommand("fail", "deliberate promise reject", () => Promise.reject("o_o")));
 
@@ -49,12 +50,27 @@ class Core extends Plugin {
     }
 
     nyadesuCommand() {
-        return "desunya! chatbot by Nexerq (nexerq@gmail.com) ~ 2016";
-    }
-
-    uptimeCommand() {
-        return `nyadesu has been connected and healthy for: \`${humanizeDuration(Nyadesu.Client.uptime)}\`.
-The bot has actually been running for: \`${humanizeDuration(Nyadesu.scriptUptime)}\`. (internet connection issues and the like can cause me to drop :<)`;
+        return {
+            title: `nyadesu v${Nyadesu.version}`,
+            type: "rich",
+            description: "up and healthy, ready to serve o7",
+            fields: [
+                {
+                    name: "owner",
+                    value: "Nexerq#5504 <nexerq@gmail.com>"
+                },
+                {
+                    name: "guild count",
+                    value: Nyadesu.Client.guilds.size,
+                    inline: true
+                },
+                {
+                    name: "users aware",
+                    value: Nyadesu.Client.users.size,
+                    inline: true
+                }
+            ]
+        };
     }
 
     recacheCommandKeys(guildId) {
