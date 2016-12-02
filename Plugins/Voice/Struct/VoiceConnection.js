@@ -74,7 +74,37 @@ class VoiceConnection {
         this.nowPlaying.getPlay()
             .then(resource => this.connection.play(resource, { inlineVolume: true }))
             .then(() => this.connection.setVolume(this.volume))
-            .then(() => this.textChannel.createMessage("***Now Playing***: " + this.nowPlaying.friendlyName));
+            .then(() => this.textChannel.createMessage({
+                embed: {
+                    color: 4446457,
+                    url: this.nowPlaying.rawLink.startsWith("http") ? this.rawLink : undefined,
+                    author: {
+                        name: `${this.nowPlaying.title} - ${this.nowPlaying.provider.prototype.constructor.name}`,
+                        icon_url: this.nowPlaying.provider.providerLogoURL
+                    },
+                    thumbnail: {
+                        url: this.nowPlaying.previewImageURL
+                    },
+                    description: "powered by nyadesu Voice",
+                    fields: [
+                        {
+                            name: "Status",
+                            value: "Now Playing",
+                            inline: true
+                        },
+                        {
+                            name: "Duration",
+                            value: this.nowPlaying.duration ? `${Math.floor(this.nowPlaying.duration/60)}m ${this.nowPlaying.duration-(Math.floor(this.nowPlaying.duration/60)*60)}s` : "Unknown",
+                            inline: true
+                        }
+                    ],
+                    timestamp: new Date(),
+                    footer: {
+                        text: `requested by ${this.nowPlaying.requester.softMention}`,
+                        icon_url: this.nowPlaying.requester.avatarURL
+                    }
+                }
+            }));
         
         return true;
     }

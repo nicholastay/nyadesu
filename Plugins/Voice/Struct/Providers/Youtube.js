@@ -23,6 +23,10 @@ class Youtube extends Provider {
         return 0;
     }
 
+    static get providerLogoURL() {
+        return "http://s.ytimg.com/yts/img/favicon_144-vflWmzoXw.png";
+    }
+
     static getInfo(item) {
         return new Promise((resolve, reject) => {
             ytdl.getInfo(item.rawLink, (err, info) => {
@@ -44,6 +48,11 @@ class Youtube extends Provider {
     static getDuration(item) {
         this._ensureProviderData(item);
         return item._providerData.length_seconds;
+    }
+
+    static getPreviewImage(item) {
+        this._ensureProviderData(item);
+        return item._providerData.thumbnail_url;
     }
 
     static getStream(item) {

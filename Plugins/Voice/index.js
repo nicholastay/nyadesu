@@ -53,7 +53,8 @@ class Voice extends Plugin {
         this.addCommand(new PluginCommand("play", {
             allowPM: false,
             reply: true,
-            requireInput: 1
+            requireInput: 1,
+            embed: true
         }, this.playCommand.bind(this)));
 
         this.addCommand(new PluginCommand("fskip", {
