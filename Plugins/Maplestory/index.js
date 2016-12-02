@@ -55,13 +55,13 @@ class Maplestory extends Plugin {
 // \`\`\``;
                 
                 return {
-                    title: `MapleStory Character Data - ${charName}`,
                     color: 16741407, // maple orange
-                    image: {
-                        url: img,
+                    author: {
+                        name: `${charName} - MapleStory Character Data`,
+                        icon_url: "https://i.imgur.com/f2cAenb.png"
                     },
                     thumbnail: {
-                        url: `http://s.nx.com/s2/game/maplestory/maple2007/image/icon/ico_world_${world.toLowerCase()}.gif`
+                        url: img
                     },
                     fields: [
                         {
